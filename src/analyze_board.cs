@@ -1,0 +1,3 @@
+/* 
+    A module that combines chess board detection modules in this files
+*/
