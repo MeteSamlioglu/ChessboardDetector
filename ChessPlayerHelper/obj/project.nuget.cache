@@ -1,11 +1,18 @@
 {
   "version": 2,
-  "dgSpecHash": "bCXeXfLy1TQhACdaaHGpk6+GXnlP9+hLi7R4X4yjorXE5RXKLSyfaZqq1HFr5DhuW1fBssG82Qb1sISIFaKW0w==",
+  "dgSpecHash": "FFPkh62rG1ZFlZmRAcfxJ8B8ePa/RDrqb0yPboJIETxJwvLpDoq86bD7E65bi+XsK3DBET8VXQ0WGwZO5AD+8g==",
   "success": true,
   "projectFilePath": "C:\\Users\\Monster\\Desktop\\Graduation Project1\\Project\\ChessPlayerHelper\\ChessPlayerHelper.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Monster\\.nuget\\packages\\microsoft.win32.systemevents\\7.0.0\\microsoft.win32.systemevents.7.0.0.nupkg.sha512",
     "C:\\Users\\Monster\\.nuget\\packages\\numsharp\\0.30.0\\numsharp.0.30.0.nupkg.sha512",
-    "C:\\Users\\Monster\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512"
+    "C:\\Users\\Monster\\.nuget\\packages\\opencv\\2.4.11\\opencv.2.4.11.nupkg.sha512",
+    "C:\\Users\\Monster\\.nuget\\packages\\opencvsharp4\\4.8.0.20230708\\opencvsharp4.4.8.0.20230708.nupkg.sha512",
+    "C:\\Users\\Monster\\.nuget\\packages\\opencvsharp4.runtime.win\\4.8.0.20230708\\opencvsharp4.runtime.win.4.8.0.20230708.nupkg.sha512",
+    "C:\\Users\\Monster\\.nuget\\packages\\opencvsharp4.wpfextensions\\4.8.0.20230708\\opencvsharp4.wpfextensions.4.8.0.20230708.nupkg.sha512",
+    "C:\\Users\\Monster\\.nuget\\packages\\system.drawing.common\\7.0.0\\system.drawing.common.7.0.0.nupkg.sha512",
+    "C:\\Users\\Monster\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\Monster\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
   ],
   "logs": []
 }

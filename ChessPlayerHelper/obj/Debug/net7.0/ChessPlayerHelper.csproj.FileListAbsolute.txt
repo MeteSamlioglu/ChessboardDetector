@@ -15,3 +15,4 @@ C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.csproj.AssemblyReference.cache
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\NumSharp.dll
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.csproj.CopyComplete
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\OpenCvSharp.dll
