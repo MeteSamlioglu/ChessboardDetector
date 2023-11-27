@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "bCXeXfLy1TQhACdaaHGpk6+GXnlP9+hLi7R4X4yjorXE5RXKLSyfaZqq1HFr5DhuW1fBssG82Qb1sISIFaKW0w==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Monster\\Desktop\\Graduation Project1\\Project\\ChessPlayerHelper\\ChessPlayerHelper.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Monster\\.nuget\\packages\\numsharp\\0.30.0\\numsharp.0.30.0.nupkg.sha512",
+    "C:\\Users\\Monster\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512"
+  ],
+  "logs": []
+}

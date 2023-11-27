@@ -1,0 +1,17 @@
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\ChessPlayerHelper.exe
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\ChessPlayerHelper.deps.json
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\ChessPlayerHelper.runtimeconfig.json
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\ChessPlayerHelper.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\ChessPlayerHelper.pdb
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.AssemblyInfoInputs.cache
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.AssemblyInfo.cs
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.csproj.CoreCompileInputs.cache
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\refint\ChessPlayerHelper.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.pdb
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.genruntimeconfig.cache
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ref\ChessPlayerHelper.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.csproj.AssemblyReference.cache
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net7.0\NumSharp.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net7.0\ChessPlayerHelper.csproj.CopyComplete
