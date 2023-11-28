@@ -5,28 +5,26 @@ using NumSharp;
 using OpenCvSharp;
 using System;
 using System.Diagnostics;
-
+using Modules;
 class Program
 {
     static void Main()
     {
         // Create a 1D array
+        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\myboard.jpg");
+
         Stopwatch stopwatch = new Stopwatch();
 
         stopwatch.Start();
 
-        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\myboard.jpg");
-        var ndFromImage = DetectCorners.Corner(myImage);
+        var ndFromImage = DetectChessBoard.FindCorners(myImage);
         
-        Mat processedImage = DetectCorners.NDArrayToMat(ndFromImage);
+        //Mat processedImage = DetectCorners.NDArrayToMat(ndFromImage);
 
         stopwatch.Stop();
 
         TimeSpan elapsedTime = stopwatch.Elapsed;
         Console.WriteLine($"Time taken for resizing: {elapsedTime}");
 
-
-        //Cv2.ImShow("Processed Image", processedImage);
-        //Cv2.WaitKey(0);
     }
 }
