@@ -4,9 +4,10 @@ using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using core.OpenCvNumSharpConverter; 
-
+using Data;
 namespace Modules
 {
+    
     /**
     * Static class responsible for detecting the four corners/borders of a chessboard in an image.
     * Contains methods for edge detection and resizing to assist in chessboard corner detection.
@@ -14,6 +15,8 @@ namespace Modules
     
     static class DetectChessBoard
     {    
+    
+    
     /**
         Find the four corner points of the chessboard for an image.
         
@@ -37,11 +40,9 @@ namespace Modules
             
             //Detect Edges     
             var edges_detected = DetectEdges(gray);
-            
-            
-            
-            //Cv2.ImShow("Edge Detection", edges_detected);
-            //Cv2.WaitKey(0);
+
+            Cv2.ImShow("Edge Detection", edges_detected);
+            Cv2.WaitKey(0);
 
             return MatArrayConverter.MatToNDArray(resizedData.Item2);
         }
@@ -55,7 +56,6 @@ namespace Modules
         * Returns:
         *   Mat: The resulting edges after applying the Canny edge detection.
         */
-        
         public static Mat DetectEdges(Mat grayImg)
         { 
             
@@ -87,18 +87,18 @@ namespace Modules
         */
         public static ValueTuple<float, Mat> ResizeImage(NDArray npImage, Mat img)
         {        
-            int height =  npImage.shape[0];
-            int width  =  npImage.shape[1];
+            var height =  npImage.shape[0];
+            var width  =  npImage.shape[1];
             
-            if(width == 1200)  
+            if(width == CONFIGURATION.RESIZE_IMAGE.WIDTH)  
             {
                 ValueTuple<float, Mat> unProcessed = (1.00f, img);
                 return unProcessed;
             }
             
-            var scale = (float)((float)1200 / width);
+            var scale = (float)(CONFIGURATION.RESIZE_IMAGE.WIDTH / width);
             
-            Size dimension = new Size(1200, height*scale);
+            Size dimension = new Size(CONFIGURATION.RESIZE_IMAGE.WIDTH, height*scale);
             
             Cv2.Resize(img, img, dimension);
             
@@ -106,7 +106,6 @@ namespace Modules
             
             return resizedImage;
         }
-
     }
 
 }
