@@ -1,7 +1,8 @@
 using NumSharp;
 using OpenCvSharp;
 using System.Runtime.InteropServices;
-
+using System;
+using System.Linq;
 namespace core.OpenCvNumSharpConverter
 {
 
@@ -12,8 +13,16 @@ namespace core.OpenCvNumSharpConverter
             byte[] pixelData = new byte[mat.Total() * mat.Channels()];
             Marshal.Copy(mat.Data, pixelData, 0, pixelData.Length);
 
-            NDArray ndArray = np.array(pixelData).reshape(mat.Rows, mat.Cols, mat.Channels());
+            NDArray ndArray = np.array(pixelData).reshape(mat.Rows, mat.Cols, mat.Channels());            
+                    
             return ndArray;
+        }
+        public static NDArray MatToNDArray(LineSegmentPolar[] Mat)
+        {
+            var linesArray = Mat
+            .Select(line => new float[] { line.Rho, line.Theta})
+            .ToArray();
+            return np.array(linesArray);
         }
 
     

@@ -6,23 +6,22 @@ namespace Data
     {
         public static class RESIZE_IMAGE
         {   
-            public static readonly int WIDTH = 1200;
+            public static readonly float WIDTH = 1200;
         }
 
         public static class EDGE_DETECTION
         {   
-            private static readonly int APERTURE = 3;
-            private static readonly int HIGH_THRESHOLD = 400;
-
-            private static readonly int LOW_THRESHOLD = 90;
+            public static readonly int APERTURE = 3;
+            public static readonly int HIGH_THRESHOLD = 400;
+            public static readonly int LOW_THRESHOLD = 90;
         }
 
         public static class LINE_DETECTION
         {
-            private static readonly int THRESHOLD = 150;
-            private static readonly bool DIAGONAL_LINE_ELIMINATION = true;
+            public static readonly int THRESHOLD = 150;
+            public static readonly bool DIAGONAL_LINE_ELIMINATION = true;
 
-            private static readonly int  DIAGONAL_LINE_ELIMINATION_THRESHOLD_DEGREES =  30;
+            public static readonly int  DIAGONAL_LINE_ELIMINATION_THRESHOLD_DEGREES =  30;
         }
 
         public static class BORDER_REFINEMENT

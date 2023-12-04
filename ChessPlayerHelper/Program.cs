@@ -11,7 +11,7 @@ class Program
     static void Main()
     {
         // Create a 1D array
-        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\board5.png");
+        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\myboard3.jpg");
 
         Stopwatch stopwatch = new Stopwatch();
 
