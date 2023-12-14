@@ -40,6 +40,22 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "dependencies": {
+            "Accord": {
+              "target": "Package",
+              "version": "[3.8.2-alpha, )"
+            },
+            "Accord.MachineLearning": {
+              "target": "Package",
+              "version": "[3.8.0, )"
+            },
+            "Aglomera": {
+              "target": "Package",
+              "version": "[1.1.1, )"
+            },
+            "MathNet.Numerics": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
             "NumSharp": {
               "target": "Package",
               "version": "[0.30.0, )"

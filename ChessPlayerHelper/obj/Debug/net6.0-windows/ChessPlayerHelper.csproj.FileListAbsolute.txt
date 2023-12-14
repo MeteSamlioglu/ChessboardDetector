@@ -3,11 +3,20 @@ C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.AssemblyInfoInputs.cache
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.AssemblyInfo.cs
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.csproj.CoreCompileInputs.cache
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.sourcelink.json
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\ChessPlayerHelper.exe
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Accord.dll.config
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\ChessPlayerHelper.deps.json
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\ChessPlayerHelper.runtimeconfig.json
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\ChessPlayerHelper.dll
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\ChessPlayerHelper.pdb
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Accord.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Accord.MachineLearning.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Accord.Math.Core.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Accord.Math.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Accord.Statistics.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Aglomera.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\MathNet.Numerics.dll
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Microsoft.Win32.SystemEvents.dll
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\NumSharp.dll
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\OpenCvSharp.dll
@@ -25,4 +34,3 @@ C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.pdb
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.genruntimeconfig.cache
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ref\ChessPlayerHelper.dll
-C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.sourcelink.json
