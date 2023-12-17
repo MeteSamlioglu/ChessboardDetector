@@ -51,6 +51,32 @@ class IdentityMetric<T> : IDissimilarityMetric<T>
 
         var selectedClusters = clusteringResult.Take(3);
         
+        //LAST TRY
+        
+        //var distanceMatrix = PairwiseDistances(thetas);
+
+        // double [][] distanceMatrixArray = new double[distanceMatrix.shape[0]][];
+        
+        // for(int i = 0 ; i < distanceMatrix.shape[0]; i++)
+        //     distanceMatrixArray[i] = new double[distanceMatrix.shape[1]];
+        
+        // for(int i = 0; i < distanceMatrix.shape[0]; i++)
+        //     for(int j = 0 ; j < distanceMatrix.shape[1]; j++)
+        //         distanceMatrixArray[i][j] = distanceMatrix[i][j];
+         
+
+
+        // var metric = new PrecomputedDistanceMetric(distanceMatrix);
+        
+        // var linkage = new AverageLinkage<int>(metric);
+        
+        // var dataPoints = new HashSet<int>(Enumerable.Range(0, distanceMatrix.shape[0]));
+        
+        // var algorithm = new AgglomerativeClusteringAlgorithm<int>(linkage);
+
+        // var clusteringResult = algorithm.GetClustering(dataPoints);
+        
+
         
   
         // Access the clusters or other information from clusteringResult

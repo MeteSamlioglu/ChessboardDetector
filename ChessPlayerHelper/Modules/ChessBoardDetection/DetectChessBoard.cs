@@ -6,13 +6,25 @@ using System.Diagnostics;
 using core.OpenCvNumSharpConverter; 
 using Data;
 using System.Linq;
+using Aglomera;
+using Aglomera.Linkage;
+using System.Collections.Generic;
 
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
+
 using Accord.MachineLearning;
 using Accord.MachineLearning.VectorMachines;
 using Accord.MachineLearning.VectorMachines.Learning;
-using NumSharp.Unmanaged.Memory;
+using Accord.Math;
+using Accord.Math.Distances;
+using Accord.Math.Kinematics;
+using Accord.Math.Optimization;
+using Accord.Statistics;
+using Accord.Statistics.Kernels;
+using Accord.Statistics.Models.Regression;
+using Accord.Statistics.Models.Regression.Fitting;
+using Accord.Statistics.Models.Regression.Linear;
+using System.Security.Cryptography;
+
 
 
 namespace Modules
@@ -39,6 +51,8 @@ static class DetectChessBoard
 
         ValueTuple<float, Mat> resizedData = ResizeImage(img);
 
+        var resizedImg = resizedData.Item2;
+    
         // Convert from BGR to Grayscale
         Mat gray = new Mat(); 
 
@@ -50,13 +64,17 @@ static class DetectChessBoard
     
         var detected_lines = DetectLines(edges_detected);
 
-
         if (detected_lines.shape[0] > 400 )
         {
            Console.WriteLine("Too many lines are detected in the image!");
            return 0;
         }
-        GetHorizontalAndVerticalLines(detected_lines);
+        ValueTuple<NDArray, NDArray> clusters = GetHorizontalAndVerticalLines(detected_lines);
+        
+        var all_horizontal_lines = clusters.Item1;
+        var all_vertical_lines = clusters.Item2;
+        
+    
         return MatArrayConverter.MatToNDArray(resizedData.Item2);
     }
     
@@ -190,62 +208,52 @@ static class DetectChessBoard
 
         return lines[sortedIndices];
     }
-    
-public static NDArray PairwiseDistances(NDArray matrix)
-{
-    int num_samples = matrix.shape[0];
-    NDArray pairwise_distance = np.zeros((num_samples, num_samples));
-
-    for (int i = 0; i < num_samples; i++)
+    public static double _absolute_angle_difference(double x, double y)
     {
-        for (int j = i + 1; j < num_samples; j++)
+        double diff = np.abs(x - y) % (2 * np.pi);
+        
+       
+        return Math.Min(diff, np.pi - diff);
+    }
+    public static NDArray PairwiseDistances(NDArray matrix)
+    {
+        var numLines = matrix.shape[0];
+        var distanceMatrix = np.zeros((numLines, numLines));
+
+        for (int i = 0; i < numLines ; i++)
         {
-            double sumOfSquares = 0.0;
-            double angle_diff_sum = 0.0;
-
-            for (int k = 0; k < matrix.shape[1]; k++)
+            for (int j = 0; j < numLines; j++)
             {
-                double diff = matrix[i, k] - matrix[j, k];
-                double diffSquared = diff * diff;  // Calculate squared difference once
-
-                sumOfSquares += diffSquared;
-
-                double angle_diff = _absolute_angle_difference(matrix[i, k], matrix[j, k]);
-                angle_diff_sum += angle_diff;
-
-                // Check for NaN values and handle them if needed
-                if (double.IsNaN(angle_diff) || double.IsNaN(sumOfSquares))
-                {
-                    // Handle NaN, e.g., set a default value or skip the calculation
-                    //Console.WriteLine($"NaN detected: i={i}, j={j}, k={k}, angle_diff={angle_diff}, sumOfSquares={sumOfSquares}");
-                    //Console.WriteLine($"matrix[i, k]={matrix[i, k]}, matrix[j, k]={matrix[j, k]}");
-                    continue;
-                }
+                var angleDifference = AbsoluteAngleDifference(matrix[i], matrix[j]);
+                distanceMatrix[i][j] = angleDifference;
             }
-
-            double euclidean_dist = Math.Sqrt(sumOfSquares);
-            double distance = euclidean_dist + angle_diff_sum;
-
-            //Console.WriteLine($"i={i}, j={j}, distance={distance}, euclidean_dist={euclidean_dist}, angle_diff_sum={angle_diff_sum}");
-
-            pairwise_distance[i][j] = 5;
-            pairwise_distance[j][i] = 5;
         }
+        return distanceMatrix;
+    }
+    
+    public static NDArray AbsoluteAngleDifference(NDArray x, NDArray y)
+    {
+        var diff = np.mod(np.abs(x - y), 2 * Math.PI);
+        var minDiff = np.min(np.stack(new[] { diff, Math.PI - diff }, axis: -1), axis: -1);
+        return minDiff;
     }
 
-    return pairwise_distance;
-}
-
-
-
-    public static double _absolute_angle_difference(float x, float y)
+  
+    class PrecomputedDistanceMetric : IDissimilarityMetric<int>
     {
-        const double epsilon = 1e-8;  // Small epsilon value to avoid division by zero
+        private readonly NDArray _distanceMatrix;
 
-        var diff = Math.Abs(x - y) % (2 * Math.PI);
-        var divisor = Math.Abs(x - y) < epsilon ? epsilon : Math.Abs(x - y);
+        public PrecomputedDistanceMetric(NDArray distanceMatrix)
+        {
+            _distanceMatrix = distanceMatrix;
+        }
 
-        return Math.Min(diff, 2 * Math.PI - diff) / divisor;
+        public double Calculate(int instance1, int instance2)
+        {
+            // Assuming instance1 and instance2 are indices in the distance matrix
+            double distance = (double)_distanceMatrix[instance1, instance2];
+            return distance;
+        }     
     }
     public static ValueTuple<NDArray, NDArray> GetHorizontalAndVerticalLines(NDArray lines)
     {   
@@ -253,24 +261,48 @@ public static NDArray PairwiseDistances(NDArray matrix)
         var lines_ = sortLines(lines);
 
         var thetas = lines_[$"...","1"].reshape(-1, 1);
-        
 
-        var distance_matrix = PairwiseDistances(thetas);
+        var distanceMatrix = PairwiseDistances(thetas);
 
-        for(int i = 0 ; i < distance_matrix.shape[0]; i++)
-            for(int j = 0 ; j < distance_matrix.shape[0]; j++)
-            Console.WriteLine($"{0}", distance_matrix[i][j]);
+        double [][] distanceMatrixArray = new double[distanceMatrix.shape[0]][];
+        
+        for(int i = 0 ; i < distanceMatrix.shape[0]; i++)
+            distanceMatrixArray[i] = new double[distanceMatrix.shape[1]];
+        
+        for(int i = 0; i < distanceMatrix.shape[0]; i++)
+            for(int j = 0 ; j < distanceMatrix.shape[1]; j++)
+                distanceMatrixArray[i][j] = distanceMatrix[i][j];
+         
 
+        KMeans kMeans = new KMeans(k: 2);
+        
+        int[] kMeansLabels = kMeans.Learn(distanceMatrixArray).Decide(distanceMatrixArray);
+        
+        NDArray clusters = np.array(kMeansLabels);
 
-        //var distanceMatrix = PairwiseDistances(thetas, absolute_angle_difference);
+        var angle_with_y_axis = AbsoluteAngleDifference(thetas, 0.0);
         
-        //for(int i = 0 ; i< distanceMatrix.shape[0]; i++)
-         //   Console.WriteLine($"item: {0}",distanceMatrix[0][i]);
+  
+        var h_cluster = 0;
+        var v_cluster = 0;
         
+        if(angle_with_y_axis[clusters == 0].mean() > angle_with_y_axis[clusters == 1].mean())
+        {
+            h_cluster = 0;
+            v_cluster = 1;
+        }
+        else
+        {
+            h_cluster = 1;
+            v_cluster = 0;
+        }
         
-        return new ValueTuple<NDArray, NDArray>(lines, lines);
+        var horizontal_lines = lines_[clusters == h_cluster];
+        var vertical_lines = lines_[clusters == v_cluster];
+        
+        return new ValueTuple<NDArray, NDArray>(horizontal_lines, vertical_lines);
     }
-    
+ 
     
     public static ValueTuple<float, Mat> ResizeImage(Mat img)
     {        
