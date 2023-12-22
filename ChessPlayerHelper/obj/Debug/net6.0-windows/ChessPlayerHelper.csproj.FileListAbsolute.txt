@@ -34,3 +34,6 @@ C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.pdb
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ChessPlayerHelper.genruntimeconfig.cache
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug\net6.0-windows\ref\ChessPlayerHelper.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Dbscan.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Dbscan.RBush.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\RBush.dll

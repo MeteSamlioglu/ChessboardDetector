@@ -13,6 +13,8 @@
     <PackageReference Include="Accord" Version="3.8.2-alpha" />
     <PackageReference Include="Accord.MachineLearning" Version="3.8.0" />
     <PackageReference Include="Aglomera" Version="1.1.1" />
+    <PackageReference Include="Dbscan" Version="3.0.0" />
+    <PackageReference Include="DBSCAN.RBush" Version="3.0.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="NumSharp" Version="0.30.0" />
     <PackageReference Include="OpenCv" Version="2.4.11" />

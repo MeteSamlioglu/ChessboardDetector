@@ -11,6 +11,8 @@
           "Accord": "3.8.2-alpha",
           "Accord.MachineLearning": "3.8.0",
           "Aglomera": "1.1.1",
+          "Dbscan.RBush": "3.0.0",
+          "Dbscan": "3.0.0",
           "MathNet.Numerics": "5.0.0",
           "NumSharp": "0.30.0",
           "OpenCV": "2.4.11",
@@ -78,6 +80,26 @@
           "lib/netstandard1.3/Aglomera.dll": {
             "assemblyVersion": "1.1.0.0",
             "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "Dbscan/3.0.0": {
+        "runtime": {
+          "lib/net6.0/Dbscan.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      },
+      "Dbscan.RBush/3.0.0": {
+        "dependencies": {
+          "Dbscan": "3.0.0",
+          "RBush": "3.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/Dbscan.RBush.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
           }
         }
       },
@@ -222,6 +244,17 @@
           }
         }
       },
+      "RBush/3.0.0": {
+        "dependencies": {
+          "System.Collections.Immutable": "1.5.0"
+        },
+        "runtime": {
+          "lib/net6.0/RBush.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
@@ -305,6 +338,7 @@
           "System.Threading.Tasks": "4.3.0"
         }
       },
+      "System.Collections.Immutable/1.5.0": {},
       "System.Console/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
@@ -895,6 +929,20 @@
       "path": "aglomera/1.1.1",
       "hashPath": "aglomera.1.1.1.nupkg.sha512"
     },
+    "Dbscan/3.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LPWFNV9GxWunJWvut6/Y50JD2PyxkhcXnzs4YNrLVlvZ+5VuzRCSmKTsFlpkutYjDWG0PF7ygO2KlEZC/8vowg==",
+      "path": "dbscan/3.0.0",
+      "hashPath": "dbscan.3.0.0.nupkg.sha512"
+    },
+    "Dbscan.RBush/3.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RvsnskTX3q8cyDatrIcnx0JoldvdWwTYDuuHw7d3Y6yBASkFhz+2P37UfDj6TDSVx+USIwP1Rtos52OK49Mj7g==",
+      "path": "dbscan.rbush/3.0.0",
+      "hashPath": "dbscan.rbush.3.0.0.nupkg.sha512"
+    },
     "MathNet.Numerics/5.0.0": {
       "type": "package",
       "serviceable": true,
@@ -971,6 +1019,13 @@
       "sha512": "sha512-XVsp4BqPOwY+yVJtU+tNhEe9HP6dLzliUeE6wtc3Y4yj/q3dj2O5gXAt1YsBWLL9sj9UuVKiIot+XHhzYmvJ9g==",
       "path": "opencvsharp4.wpfextensions/4.8.0.20230708",
       "hashPath": "opencvsharp4.wpfextensions.4.8.0.20230708.nupkg.sha512"
+    },
+    "RBush/3.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qYPef3JB1a6Mik6Y8o3epqQ9OZ74FUbKr/8mt2HjyH6KF5cFEZ5XpaDK68jT5oR/ytxXrfolawToSODWyDp/hQ==",
+      "path": "rbush/3.0.0",
+      "hashPath": "rbush.3.0.0.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "type": "package",
@@ -1111,6 +1166,13 @@
       "sha512": "sha512-ztl69Xp0Y/UXCL+3v3tEU+lIy+bvjKNUmopn1wep/a291pVPK7dxBd6T7WnlQqRog+d1a/hSsgRsmFnIBKTPLQ==",
       "path": "system.collections.concurrent/4.3.0",
       "hashPath": "system.collections.concurrent.4.3.0.nupkg.sha512"
+    },
+    "System.Collections.Immutable/1.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EXKiDFsChZW0RjrZ4FYHu9aW6+P4MCgEDCklsVseRfhoO0F+dXeMSsMRAlVXIo06kGJ/zv+2w1a2uc2+kxxSaQ==",
+      "path": "system.collections.immutable/1.5.0",
+      "hashPath": "system.collections.immutable.1.5.0.nupkg.sha512"
     },
     "System.Console/4.3.0": {
       "type": "package",

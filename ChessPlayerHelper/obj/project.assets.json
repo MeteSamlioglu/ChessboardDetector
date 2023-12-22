@@ -91,6 +91,36 @@
           }
         }
       },
+      "Dbscan/3.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Dbscan.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Dbscan.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Dbscan.RBush/3.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Dbscan": "3.0.0",
+          "RBush": "3.0.0"
+        },
+        "compile": {
+          "lib/net6.0/Dbscan.RBush.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Dbscan.RBush.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "MathNet.Numerics/5.0.0": {
         "type": "package",
         "compile": {
@@ -279,6 +309,22 @@
         },
         "runtime": {
           "lib/net6.0/OpenCvSharp.WpfExtensions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "RBush/3.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections.Immutable": "1.5.0"
+        },
+        "compile": {
+          "lib/net6.0/RBush.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/RBush.dll": {
             "related": ".xml"
           }
         }
@@ -518,6 +564,19 @@
         },
         "runtime": {
           "lib/netstandard1.3/System.Collections.Concurrent.dll": {}
+        }
+      },
+      "System.Collections.Immutable/1.5.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/System.Collections.Immutable.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Collections.Immutable.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Console/4.3.0": {
@@ -1707,6 +1766,42 @@
         "lib/netstandard1.3/Aglomera.xml"
       ]
     },
+    "Dbscan/3.0.0": {
+      "sha512": "LPWFNV9GxWunJWvut6/Y50JD2PyxkhcXnzs4YNrLVlvZ+5VuzRCSmKTsFlpkutYjDWG0PF7ygO2KlEZC/8vowg==",
+      "type": "package",
+      "path": "dbscan/3.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "dbscan.3.0.0.nupkg.sha512",
+        "dbscan.nuspec",
+        "lib/net6.0/Dbscan.dll",
+        "lib/net6.0/Dbscan.xml",
+        "lib/netcoreapp3.1/Dbscan.dll",
+        "lib/netcoreapp3.1/Dbscan.xml",
+        "lib/netstandard1.2/Dbscan.dll",
+        "lib/netstandard1.2/Dbscan.xml",
+        "readme.md"
+      ]
+    },
+    "Dbscan.RBush/3.0.0": {
+      "sha512": "RvsnskTX3q8cyDatrIcnx0JoldvdWwTYDuuHw7d3Y6yBASkFhz+2P37UfDj6TDSVx+USIwP1Rtos52OK49Mj7g==",
+      "type": "package",
+      "path": "dbscan.rbush/3.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "dbscan.rbush.3.0.0.nupkg.sha512",
+        "dbscan.rbush.nuspec",
+        "lib/net6.0/Dbscan.RBush.dll",
+        "lib/net6.0/Dbscan.RBush.xml",
+        "lib/netcoreapp3.1/Dbscan.RBush.dll",
+        "lib/netcoreapp3.1/Dbscan.RBush.xml",
+        "lib/netstandard1.2/Dbscan.RBush.dll",
+        "lib/netstandard1.2/Dbscan.RBush.xml",
+        "readme.md"
+      ]
+    },
     "MathNet.Numerics/5.0.0": {
       "sha512": "pg1W2VwaEQMAiTpGK840hZgzavnqjlCMTVSbtVCXVyT+7AX4mc1o89SPv4TBlAjhgCOo9c1Y+jZ5m3ti2YgGgA==",
       "type": "package",
@@ -2089,6 +2184,24 @@
         "lib/net6.0/OpenCvSharp.WpfExtensions.xml",
         "opencvsharp4.wpfextensions.4.8.0.20230708.nupkg.sha512",
         "opencvsharp4.wpfextensions.nuspec"
+      ]
+    },
+    "RBush/3.0.0": {
+      "sha512": "qYPef3JB1a6Mik6Y8o3epqQ9OZ74FUbKr/8mt2HjyH6KF5cFEZ5XpaDK68jT5oR/ytxXrfolawToSODWyDp/hQ==",
+      "type": "package",
+      "path": "rbush/3.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net6.0/RBush.dll",
+        "lib/net6.0/RBush.xml",
+        "lib/netcoreapp3.1/RBush.dll",
+        "lib/netcoreapp3.1/RBush.xml",
+        "lib/netstandard1.2/RBush.dll",
+        "lib/netstandard1.2/RBush.xml",
+        "rbush.3.0.0.nupkg.sha512",
+        "rbush.nuspec",
+        "readme.md"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -2519,6 +2632,29 @@
         "ref/xamarinwatchos10/_._",
         "system.collections.concurrent.4.3.0.nupkg.sha512",
         "system.collections.concurrent.nuspec"
+      ]
+    },
+    "System.Collections.Immutable/1.5.0": {
+      "sha512": "EXKiDFsChZW0RjrZ4FYHu9aW6+P4MCgEDCklsVseRfhoO0F+dXeMSsMRAlVXIo06kGJ/zv+2w1a2uc2+kxxSaQ==",
+      "type": "package",
+      "path": "system.collections.immutable/1.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/netstandard1.0/System.Collections.Immutable.dll",
+        "lib/netstandard1.0/System.Collections.Immutable.xml",
+        "lib/netstandard1.3/System.Collections.Immutable.dll",
+        "lib/netstandard1.3/System.Collections.Immutable.xml",
+        "lib/netstandard2.0/System.Collections.Immutable.dll",
+        "lib/netstandard2.0/System.Collections.Immutable.xml",
+        "lib/portable-net45+win8+wp8+wpa81/System.Collections.Immutable.dll",
+        "lib/portable-net45+win8+wp8+wpa81/System.Collections.Immutable.xml",
+        "system.collections.immutable.1.5.0.nupkg.sha512",
+        "system.collections.immutable.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
       ]
     },
     "System.Console/4.3.0": {
@@ -5370,6 +5506,8 @@
       "Accord >= 3.8.2-alpha",
       "Accord.MachineLearning >= 3.8.0",
       "Aglomera >= 1.1.1",
+      "DBSCAN.RBush >= 3.0.0",
+      "Dbscan >= 3.0.0",
       "MathNet.Numerics >= 5.0.0",
       "NumSharp >= 0.30.0",
       "OpenCv >= 2.4.11",
@@ -5428,6 +5566,14 @@
           "Aglomera": {
             "target": "Package",
             "version": "[1.1.1, )"
+          },
+          "DBSCAN.RBush": {
+            "target": "Package",
+            "version": "[3.0.0, )"
+          },
+          "Dbscan": {
+            "target": "Package",
+            "version": "[3.0.0, )"
           },
           "MathNet.Numerics": {
             "target": "Package",
