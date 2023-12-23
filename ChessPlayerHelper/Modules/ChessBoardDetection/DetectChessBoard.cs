@@ -26,7 +26,7 @@ namespace Modules
 static class DetectChessBoard
 {    
     
-    public static NDArray FindCorners(Mat img)
+    public static NDArray FindCorners(Mat img_)
     {
     /**
         Find the four corner points of the chessboard for an image.
@@ -36,21 +36,23 @@ static class DetectChessBoard
         Returns:
             NDArray: That contains the coordinates of the four corners 
     **/
-
+        Mat img = new Mat();
+        Cv2.CvtColor(img_, img, ColorConversionCodes.BGR2RGB);
+     
         ValueTuple<float, Mat> resizedData = ResizeImage(img);
 
         var resizedImg = resizedData.Item2;
     
         // Convert from BGR to Grayscale
         Mat gray = new Mat(); 
-
+        
         Cv2.CvtColor(img, gray, ColorConversionCodes.BGR2GRAY);
-        
-        var edges_detected = DetectEdges(gray);
-        
-        NDArray np = MatArrayConverter.MatToNDArray(edges_detected);
     
+        var edges_detected = DetectEdges(gray);        
+    
+
         var detected_lines = DetectLines(edges_detected);
+        
 
         if (detected_lines.shape[0] > 400 )
         {
@@ -61,11 +63,12 @@ static class DetectChessBoard
         
         var all_horizontal_lines = clusters.Item1;
         var all_vertical_lines = clusters.Item2;
+
         var horizontal_lines = EliminateSimilarLines(all_horizontal_lines, all_vertical_lines);
         var vertical_lines = EliminateSimilarLines(all_vertical_lines, all_horizontal_lines);
+
         var all_intersection_points = _get_intersection_points(horizontal_lines,vertical_lines);
         
-        Console.WriteLine("Shape {0} {1} {2}", all_intersection_points.shape[0],all_intersection_points.shape[1],all_intersection_points.shape[2]);
         Mat imgWithPoints = img.Clone();
 
         for(int i = 0 ; i < all_intersection_points.shape[0]; i++) 
@@ -74,14 +77,9 @@ static class DetectChessBoard
             {
                 double x = all_intersection_points[i][j][0];
                 double y = all_intersection_points[i][j][1];
-                Console.WriteLine("{0} {1}", all_intersection_points[i][j][0], all_intersection_points[i][j][1]);
 
-                // Draw a circle for each intersection point
                 Cv2.Circle(imgWithPoints, new OpenCvSharp.Point(x, y), 5, new Scalar(0, 255, 0), -1);
             }
-            Console.WriteLine("---------------------\n\n");
-            // Cv2.ImShow("Image with Points", imgWithPoints);
-            // Cv2.WaitKey(0);
         }
         Cv2.ImShow("Image with Points", imgWithPoints);
         Cv2.WaitKey(0);
@@ -133,9 +131,10 @@ static class DetectChessBoard
 
     public static NDArray DetectLines(Mat Edges)
     {
-
+        
         var lines = Cv2.HoughLines(Edges,1, np.pi/360, CONFIGURATION.LINE_DETECTION.THRESHOLD);
             
+ 
         if(lines == null ||lines.Length == 0)
         {
             Console.WriteLine("Chessboard is not detected");
@@ -143,7 +142,6 @@ static class DetectChessBoard
         }    
         
         var linesSqueezed = MatArrayConverter.MatToNDArray(lines);
-        
         
         var hesse_form = fixNegativeRhoInHesseForm(linesSqueezed);
         
@@ -322,7 +320,17 @@ public static NDArray get_intersection_points(NDArray rho1, NDArray theta1, NDAr
 }
 public static NDArray _get_intersection_points(NDArray horizontal_lines, NDArray vertical_lines)
 {
-    
+    // Console.WriteLine("Horizontal");
+    // for(int i = 0 ; i < horizontal_lines.shape[0]; i++)
+    // {
+    //     Console.Write("{0}",horizontal_lines[i]);
+    // }
+    // Console.WriteLine("\nVertical\n");
+    // for(int i = 0 ; i < vertical_lines.shape[0]; i++)
+    // {
+    //     Console.Write("{0}",vertical_lines[i]);
+    // }
+
     var horizontalLinesTransposed = np.transpose(horizontal_lines);
     var rho1 = horizontalLinesTransposed[0];
     var theta1 = horizontalLinesTransposed[1];
@@ -376,22 +384,28 @@ public static NDArray _get_intersection_points(NDArray horizontal_lines, NDArray
     public static NDArray EliminateSimilarLines(NDArray lines, NDArray perpendicular_lines)
     {
         
+       
         var mean = perpendicular_lines.mean(axis: 0, keepdims: true);
 
         var perp_rho = mean[$":","0"];
         var perp_theta = mean[$":","1"];
 
-
+    
+   
         
         var movedAxes = np.moveaxis(lines, -1, 0);
-        var rho = movedAxes[$":", "0"];
-        var theta = movedAxes[$":", "1"];       
-
-                
+        var rho = movedAxes[":", "0"];
+        var theta = movedAxes[":", "1"];       
+        
+        // var index = theta.shape[0] - 4;
+        // float temp = (float)theta[index];
+        // float temp2 = (float)theta[index - 1];
+        // theta[index] = temp2;
+        // theta[index - 1] = temp;
+        
         var intersection_points = get_intersection_points(rho, theta, perp_rho, perp_theta);
    
         
-  
         List<ClusterPoint> list = new List<ClusterPoint>();        
   
         for(int i = 0 ; i < intersection_points.shape[0]; i++)
@@ -401,41 +415,48 @@ public static NDArray _get_intersection_points(NDArray horizontal_lines, NDArray
             ClusterPoint point = new ClusterPoint(x, y);
             list.Add(point);
         }
-        
      
-         var epsilon = 12.0;
+         var epsilon = 12;
          var minimumPointsPerCluster = 1;
          var clusters = DbscanRBush.CalculateClusters(list, epsilon, minimumPointsPerCluster);
          var labels = clusters.Clusters;
          var max = clusters.Clusters.Count;
          List<int> cluster_labels = new List<int>();
-         List<double[]> clusterPairsList = new List<double[]>();
+         Dictionary<ClusterPoint, int> pointToClusterMap = new Dictionary<ClusterPoint, int>();
 
-         for (int i = 0; i < clusters.Clusters.Count; i++)
+
+        for (int i = 0; i < clusters.Clusters.Count; i++)
+        {
+            var cluster = clusters.Clusters[i];
+            foreach (var point in cluster.Objects)
             {
-                var cluster = clusters.Clusters[i];
-                foreach (var point in cluster.Objects)
-                {
-                    cluster_labels.Add(i);
-                }
+                pointToClusterMap.Add(point, i);
             }
+        }
+        foreach (var clusterPoint in list)
+        {
+             ClusterPoint findPoint = clusterPoint;
+            if (pointToClusterMap.TryGetValue(findPoint, out int clusterLabel))
+            {
+                cluster_labels.Add(clusterLabel);
+            }           
+        }
         var clusters_ndarray = np.array(cluster_labels);
-
     
         NDArray clusterPairs = np.zeros((max, 2));
+        
         for (int i = 0 ; i < max; i++)
         {
             var lines_in_cluster = lines[clusters_ndarray == i];
+            
             var rho_ = lines_in_cluster[$"...","0"];
-
+            
             var sortedRho = rho_.Data<double>().OrderBy(x => x).ToArray();
             
             int medianIndex = sortedRho.Length / 2;
             
             clusterPairs[i] = lines_in_cluster[medianIndex];
-
         }
-        
         return clusterPairs;
     }
     public static ValueTuple<float, Mat> ResizeImage(Mat img)
@@ -472,11 +493,3 @@ public static NDArray _get_intersection_points(NDArray horizontal_lines, NDArray
 }
 
 }
-
-/*
-
-
-
-
-*/
-
