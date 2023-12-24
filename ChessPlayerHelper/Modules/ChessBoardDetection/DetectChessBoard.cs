@@ -14,6 +14,7 @@ using Accord.MachineLearning;
 using Accord.Math;
 using Dbscan.RBush;
 using System.Xaml;
+using Microsoft.VisualBasic.Devices;
 
 namespace Modules
 {
@@ -69,23 +70,99 @@ static class DetectChessBoard
 
         var all_intersection_points = _get_intersection_points(horizontal_lines,vertical_lines);
         
-        Mat imgWithPoints = img.Clone();
+        // Mat imgWithPoints = img.Clone();
 
-        for(int i = 0 ; i < all_intersection_points.shape[0]; i++) 
-        {
-            for(int j = 0; j < all_intersection_points.shape[1]; j++)
-            {
-                double x = all_intersection_points[i][j][0];
-                double y = all_intersection_points[i][j][1];
+        // for(int i = 0 ; i < all_intersection_points.shape[0]; i++) 
+        // {
+        //     for(int j = 0; j < all_intersection_points.shape[1]; j++)
+        //     {
+        //         double x = all_intersection_points[i][j][0];
+        //         double y = all_intersection_points[i][j][1];
 
-                Cv2.Circle(imgWithPoints, new OpenCvSharp.Point(x, y), 5, new Scalar(0, 255, 0), -1);
-            }
+        //         Cv2.Circle(imgWithPoints, new OpenCvSharp.Point(x, y), 5, new Scalar(0, 255, 0), -1);
+        //     }
+        // }
+        // Cv2.ImShow("Image with Points", imgWithPoints);
+        // Cv2.WaitKey(0);
+        var best_num_inliers = 0;
+        int iterations = 0;
+        while (iterations < 200 && best_num_inliers < 30)
+        {   
+            var rows = ChooseFromRange(horizontal_lines.shape[0]);
+            var columns = ChooseFromRange(vertical_lines.shape[0]);
+            var row1 = rows[0];
+            var row2 = rows[1];
+            var col1 = columns[0];
+            var col2 = columns[1];
+            
+            //ComputeHomography(all_intersection_points,0,6,5,8);
+            var transformation_matrix = ComputeHomography(all_intersection_points,8,9,6,11);
+            // for(int i = 0 ; i < transformation_matrix.shape[0]; i++)
+            // {
+            //     for(int j = 0 ; j < transformation_matrix.shape[1]; j++)
+            //     {
+            //         Console.Write("{0} ",transformation_matrix[i][j]);
+            //     }
+            //     Console.Write("\n");
+            // }
+            
+            Console.WriteLine("-------------------");
+            iterations =  iterations + 1;
+
         }
-        Cv2.ImShow("Image with Points", imgWithPoints);
-        Cv2.WaitKey(0);
-        return MatArrayConverter.MatToNDArray(resizedData.Item2);
+        
+        return all_intersection_points;
     }
-    
+    public static NDArray ChooseFromRange(int upper_bound, int n = 2)
+    {
+        var indices = np.arange(upper_bound);
+        var n_ = new Shape(n);
+
+        // Set a seed for reproducibility
+        np.random.seed(42);
+
+        // Fisher-Yates shuffle
+        var rng = new Random();
+        var shuffledIndices = indices.ToArray<int>().OrderBy(x => rng.Next()).ToArray();
+
+        // Take the first n elements
+        var selectedIndices = shuffledIndices.Take(n).OrderBy(x => x).ToArray();
+
+        return np.array(selectedIndices);
+}
+    public static NDArray ComputeHomography(NDArray intersection_points, int row1, int row2, int col1, int col2)
+    {
+        var p1 = intersection_points[row1, col1]; //Top Left
+        var p2 = intersection_points[row1, col2]; //Top Right
+        var p3 = intersection_points[row2, col2];  //Bottom Right
+        var p4 = intersection_points[row2, col1];  // Bottom Left
+        
+        var src_points = np.stack([p1, p2, p3, p4]);
+        var dst_points = np.array([[0, 0], //top left
+                           [1, 0], //top right
+                           [1, 1],  //bottom right
+                           [0, 1]]); // bottom left
+
+ 
+        return ComputeTransformationMatrix(src_points, dst_points);
+    }
+    public static NDArray ComputeTransformationMatrix(NDArray src_points, NDArray dst_points)
+    {
+        var source_points = src_points.reshape(-1,2);
+        var destination_points = dst_points.reshape(-1, 2);
+
+        // Mat sourceMat = new Mat(source_points.Shape[0], source_points.Shape[1], MatType.CV_64F, source_points.GetData<double>().ToArray());
+        // Mat destinationMat = new Mat(destination_points.Shape[0], destination_points.Shape[1], MatType.CV_64F, destination_points.GetData<double>().ToArray());
+
+        Mat sourceMat = MatArrayConverter.NDArrayToMat(source_points);
+        Mat destinationMat = MatArrayConverter.NDArrayToMat(destination_points);
+
+        var transformation_matrix = Cv2.FindHomography(sourceMat, destinationMat);
+       
+        var transformation_matrix_ = MatArrayConverter.MatToNDArray(transformation_matrix);
+
+        return transformation_matrix_;
+    }
     public static Mat DetectEdges(Mat grayImg)
     { 
         /**
@@ -320,16 +397,6 @@ public static NDArray get_intersection_points(NDArray rho1, NDArray theta1, NDAr
 }
 public static NDArray _get_intersection_points(NDArray horizontal_lines, NDArray vertical_lines)
 {
-    // Console.WriteLine("Horizontal");
-    // for(int i = 0 ; i < horizontal_lines.shape[0]; i++)
-    // {
-    //     Console.Write("{0}",horizontal_lines[i]);
-    // }
-    // Console.WriteLine("\nVertical\n");
-    // for(int i = 0 ; i < vertical_lines.shape[0]; i++)
-    // {
-    //     Console.Write("{0}",vertical_lines[i]);
-    // }
 
     var horizontalLinesTransposed = np.transpose(horizontal_lines);
     var rho1 = horizontalLinesTransposed[0];
