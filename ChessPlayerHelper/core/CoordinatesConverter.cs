@@ -38,11 +38,7 @@ namespace core.OpenCvNumSharpConverter
 
             return result;
         }
-        /// <summary>
-        /// Converts homogeneous coordinates to Cartesian coordinates.
-        /// </summary>
-        /// <param name="coordinates">The homogeneous coordinates (shape: [..., 3]).</param>
-        /// <returns>The Cartesian coordinates (shape: [..., 2]).</returns>
+       
         public static NDArray FromHomogenousCoordinates(NDArray coordinates)
         {
 
