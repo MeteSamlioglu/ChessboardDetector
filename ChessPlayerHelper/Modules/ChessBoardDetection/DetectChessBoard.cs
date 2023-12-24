@@ -95,18 +95,18 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            //ComputeHomography(all_intersection_points,0,6,5,8);
-            var transformation_matrix = ComputeHomography(all_intersection_points,8,9,6,11);
-            for(int i = 0 ; i < transformation_matrix.shape[0]; i++)
-            {
-                for(int j = 0 ; j < transformation_matrix.shape[1]; j++)
-                {
-                    Console.Write("{0} ",transformation_matrix[i][j]);
-                }
-                Console.Write("\n");
-            }
+            var transformation_matrix = ComputeHomography(all_intersection_points,1,3,3,11);
+            var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
+            // for(int i = 0 ; i < transformation_matrix.shape[0]; i++)
+            // {
+            //     for(int j = 0 ; j < transformation_matrix.shape[1]; j++)
+            //     {
+            //         Console.Write("{0} ",transformation_matrix[i][j]);
+            //     }
+            //     Console.Write("\n");
+            // }
             
-            Console.WriteLine("-------------------");
+            // Console.WriteLine("-------------------");
             iterations =  iterations + 1;
 
         }
@@ -129,7 +129,7 @@ static class DetectChessBoard
         var selectedIndices = shuffledIndices.Take(n).OrderBy(x => x).ToArray();
 
         return np.array(selectedIndices);
-}
+    }
     public static NDArray ComputeHomography(NDArray intersection_points, int row1, int row2, int col1, int col2)
     {
         var p1 = intersection_points[row1, col1]; //Top Left
@@ -162,6 +162,23 @@ static class DetectChessBoard
         var transformation_matrix_ = MatArrayConverter.MatToNDArray(transformation_matrix);
 
         return transformation_matrix_;
+    }
+    
+    public static NDArray WarpPoints(NDArray TransformationMatrix, NDArray Points)
+    {
+        var points = CoordinatesConverter.ToHomogenousCoordinates(Points);
+
+        Console.WriteLine("Points shape {0} {1} {2}",points.shape[0], points.shape[1], points.shape[2]);
+        for(int i = 0; i < points.shape[0]; i++)
+        {
+            for(int j = 0 ; j < points.shape[1]; j++)
+            {
+                Console.WriteLine("{0} {1} {2}",points[i][j][0],points[i][j][1], points[i][j][2]);
+            }
+            Console.WriteLine("\n");
+        }
+
+        return TransformationMatrix;
     }
     public static Mat DetectEdges(Mat grayImg)
     { 
