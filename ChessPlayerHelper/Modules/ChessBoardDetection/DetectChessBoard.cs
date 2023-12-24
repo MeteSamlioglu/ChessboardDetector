@@ -97,14 +97,14 @@ static class DetectChessBoard
             
             //ComputeHomography(all_intersection_points,0,6,5,8);
             var transformation_matrix = ComputeHomography(all_intersection_points,8,9,6,11);
-            // for(int i = 0 ; i < transformation_matrix.shape[0]; i++)
-            // {
-            //     for(int j = 0 ; j < transformation_matrix.shape[1]; j++)
-            //     {
-            //         Console.Write("{0} ",transformation_matrix[i][j]);
-            //     }
-            //     Console.Write("\n");
-            // }
+            for(int i = 0 ; i < transformation_matrix.shape[0]; i++)
+            {
+                for(int j = 0 ; j < transformation_matrix.shape[1]; j++)
+                {
+                    Console.Write("{0} ",transformation_matrix[i][j]);
+                }
+                Console.Write("\n");
+            }
             
             Console.WriteLine("-------------------");
             iterations =  iterations + 1;
