@@ -81,7 +81,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,2,9,8,9);
+            var transformation_matrix = ComputeHomography(all_intersection_points,4,8,3,9);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
        
             iterations =  iterations + 1;
@@ -154,7 +154,7 @@ static class DetectChessBoard
         var points = CoordinatesConverter.ToHomogenousCoordinates(Points);
         var transposedMatrix = np.transpose(TransformationMatrix);
 
-        // Console.WriteLine("TransformationMatrix");
+        Console.WriteLine("TransformationMatrix");
         
         // for(int i = 0 ; i < TransformationMatrix.shape[0]; i++)
         // {
@@ -179,29 +179,29 @@ static class DetectChessBoard
 
         NDArray warpedPoints = np.zeros(n, m, p);
 
-        // for (int i = 0; i < n; i++)
-        // {
-        //     for (int j = 0; j < m; j++)
-        //     {
-        //         for (int k = 0; k < p; k++)
-        //         {
-        //             warpedPoints[i, j, k] = 0;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                for (int k = 0; k < p; k++)
+                {
+                    warpedPoints[i, j, k] = 0;
 
-        //             for (int l = 0; l < transposedMatrix.shape[0]; l++)
-        //             {
-        //                 warpedPoints[i, j, k] += points[i, j, l] * transposedMatrix[l, k];
-        //             }
-        //         }
-        //     }
-        // }
-        // for(int i = 0 ; i < warpedPoints.shape[0]; i++)
-        // {
-        //     for(int j = 0 ; j < warpedPoints.shape[1]; j++)
-        //     {
-        //         Console.Write("[{0} {1} {2}]\n",warpedPoints[i][j][0],warpedPoints[i][j][1],warpedPoints[i][j][2]);
-        //     }
-        //     Console.WriteLine("--------------------------");
-        // }
+                    for (int l = 0; l < transposedMatrix.shape[0]; l++)
+                    {
+                        warpedPoints[i, j, k] += points[i, j, l] * transposedMatrix[l, k];
+                    }
+                }
+            }
+        }
+        for(int i = 0 ; i < warpedPoints.shape[0]; i++)
+        {
+            for(int j = 0 ; j < warpedPoints.shape[1]; j++)
+            {
+                Console.Write("[{0} {1} {2}]\n",warpedPoints[i][j][0],warpedPoints[i][j][1],warpedPoints[i][j][2]);
+            }
+            Console.WriteLine("--------------------------");
+        }
         
    
         return TransformationMatrix;
