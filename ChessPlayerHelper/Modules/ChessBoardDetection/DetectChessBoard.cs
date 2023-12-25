@@ -81,13 +81,12 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,4,8,3,9);
+            var transformation_matrix = ComputeHomography(all_intersection_points,2,5,0,1);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
        
             iterations =  iterations + 1;
 
         }
-        
         return all_intersection_points;
     }
     public static NDArray ChooseFromRange(int upper_bound, int n = 2)
@@ -153,25 +152,7 @@ static class DetectChessBoard
     {
         var points = CoordinatesConverter.ToHomogenousCoordinates(Points);
         var transposedMatrix = np.transpose(TransformationMatrix);
-
-        Console.WriteLine("TransformationMatrix");
         
-        // for(int i = 0 ; i < TransformationMatrix.shape[0]; i++)
-        // {
-        //     for(int j = 0 ; j < TransformationMatrix.shape[1]; j++)
-        //     {
-        //         Console.Write("{0} ",TransformationMatrix[i][j]);
-        //     }
-        //     Console.Write("\n");
-        // }
-            
-        // Console.WriteLine("-------------------");
-        // Console.WriteLine("Transposed Transformation Matrix");
-        // for(int i = 0 ; i < transposedMatrix.shape[0]; i++)
-        // {
-        //     Console.WriteLine("[{0} , {1} , {2}]\n",transposedMatrix[i][0], transposedMatrix[i][1], transposedMatrix[i][2]);
-        // }
-
 
         int n = points.shape[0];
         int m = points.shape[1];
@@ -194,14 +175,18 @@ static class DetectChessBoard
                 }
             }
         }
-        for(int i = 0 ; i < warpedPoints.shape[0]; i++)
-        {
-            for(int j = 0 ; j < warpedPoints.shape[1]; j++)
-            {
-                Console.Write("[{0} {1} {2}]\n",warpedPoints[i][j][0],warpedPoints[i][j][1],warpedPoints[i][j][2]);
-            }
-            Console.WriteLine("--------------------------");
-        }
+        
+        //Console.WriteLine("{0} {1} {2} ",warpedPoints.shape[0], warpedPoints.shape[1], warpedPoints.shape[2]);
+        var HomogenousCoordinates = CoordinatesConverter.FromHomogeneousCoordinates(warpedPoints);
+        //Console.WriteLine("{0} ",HomogenousCoordinates.shape[0]);
+        // for(int i = 0 ; i < HomogenousCoordinates.shape[0]; i++)
+        // {
+        //     for(int j = 0 ; j < HomogenousCoordinates.shape[1]; j++)
+        //     {
+        //         Console.Write("[{0} {1}]\n",HomogenousCoordinates[i][j][0],HomogenousCoordinates[i][j][1]);
+        //     }
+        //     Console.WriteLine("--------------------------");
+        // }
         
    
         return TransformationMatrix;
@@ -506,12 +491,6 @@ public static NDArray _get_intersection_points(NDArray horizontal_lines, NDArray
         var movedAxes = np.moveaxis(lines, -1, 0);
         var rho = movedAxes[":", "0"];
         var theta = movedAxes[":", "1"];       
-        
-        // var index = theta.shape[0] - 4;
-        // float temp = (float)theta[index];
-        // float temp2 = (float)theta[index - 1];
-        // theta[index] = temp2;
-        // theta[index - 1] = temp;
         
         var intersection_points = get_intersection_points(rho, theta, perp_rho, perp_theta);
    

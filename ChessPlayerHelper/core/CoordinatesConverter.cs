@@ -38,24 +38,29 @@ namespace core.OpenCvNumSharpConverter
 
             return result;
         }
-       
-        public static NDArray FromHomogenousCoordinates(NDArray coordinates)
+    public static NDArray FromHomogeneousCoordinates(NDArray coordinates)
+    {
+        var lastDim = coordinates.shape.Length - 1;
+
+        // Extract the last column (homogeneous coordinate) for each 3D vector
+        var homogeneousColumn = coordinates[$":, :, {lastDim}"];
+
+        // Divide the first two columns by the homogeneous coordinate
+        var result = coordinates[$":, :, :{lastDim}"] / homogeneousColumn[$"...", np.newaxis];
+
+        
+        Console.WriteLine(" Shape Homogenous {0} {1} {2}",result.shape[0],result.shape[1],result.shape[2]);
+
+        for(int i = 0 ; i < result.shape[0]; i++)
         {
-
-            var slicedCoordinates = coordinates[Slice.All, Slice.All, Slice.Index(0), Slice.Index(2)];
-
-            // Use slice notation to take the third element along the last dimension
-            var thirdElement = coordinates[Slice.All, Slice.All, Slice.Index(2)];
-
-            // Use NumSharp's broadcasting to divide the sliced coordinates by the third element
-            var result = slicedCoordinates / thirdElement;
-
-            return result;
+            for(int j = 0 ; j < result.shape[1]; j++)
+            {
+                Console.WriteLine("[{0} {1}]",result[i][j][0], result[i][j][1]);
+            }
+            Console.WriteLine("\n");
         }
-
-
-
-
+        return result;
     }
 
+}
 }
