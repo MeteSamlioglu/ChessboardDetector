@@ -70,20 +70,6 @@ static class DetectChessBoard
 
         var all_intersection_points = _get_intersection_points(horizontal_lines,vertical_lines);
         
-        // Mat imgWithPoints = img.Clone();
-
-        // for(int i = 0 ; i < all_intersection_points.shape[0]; i++) 
-        // {
-        //     for(int j = 0; j < all_intersection_points.shape[1]; j++)
-        //     {
-        //         double x = all_intersection_points[i][j][0];
-        //         double y = all_intersection_points[i][j][1];
-
-        //         Cv2.Circle(imgWithPoints, new OpenCvSharp.Point(x, y), 5, new Scalar(0, 255, 0), -1);
-        //     }
-        // }
-        // Cv2.ImShow("Image with Points", imgWithPoints);
-        // Cv2.WaitKey(0);
         var best_num_inliers = 0;
         int iterations = 0;
         while (iterations < 200 && best_num_inliers < 30)
@@ -95,18 +81,9 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,1,3,3,11);
+            var transformation_matrix = ComputeHomography(all_intersection_points,2,9,8,9);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
-            // for(int i = 0 ; i < transformation_matrix.shape[0]; i++)
-            // {
-            //     for(int j = 0 ; j < transformation_matrix.shape[1]; j++)
-            //     {
-            //         Console.Write("{0} ",transformation_matrix[i][j]);
-            //     }
-            //     Console.Write("\n");
-            // }
-            
-            // Console.WriteLine("-------------------");
+       
             iterations =  iterations + 1;
 
         }
@@ -150,16 +127,24 @@ static class DetectChessBoard
     {
         var source_points = src_points.reshape(-1,2);
         var destination_points = dst_points.reshape(-1, 2);
-
-        // Mat sourceMat = new Mat(source_points.Shape[0], source_points.Shape[1], MatType.CV_64F, source_points.GetData<double>().ToArray());
-        // Mat destinationMat = new Mat(destination_points.Shape[0], destination_points.Shape[1], MatType.CV_64F, destination_points.GetData<double>().ToArray());
-
+        
+     
         Mat sourceMat = MatArrayConverter.NDArrayToMat(source_points);
         Mat destinationMat = MatArrayConverter.NDArrayToMat(destination_points);
 
         var transformation_matrix = Cv2.FindHomography(sourceMat, destinationMat);
-       
         var transformation_matrix_ = MatArrayConverter.MatToNDArray(transformation_matrix);
+
+        // Console.WriteLine("Transformation Mat");
+        // for(int i = 0 ; i < transformation_matrix_.shape[0]; i++)
+        // {
+        //     for(int j = 0 ; j < transformation_matrix_.shape[1]; j++)
+        //     {
+        //         Console.WriteLine("{0} ",transformation_matrix_[i][j]);
+        //     }
+        //     Console.WriteLine("\n");
+        // }
+        
 
         return transformation_matrix_;
     }
@@ -167,17 +152,58 @@ static class DetectChessBoard
     public static NDArray WarpPoints(NDArray TransformationMatrix, NDArray Points)
     {
         var points = CoordinatesConverter.ToHomogenousCoordinates(Points);
+        var transposedMatrix = np.transpose(TransformationMatrix);
 
-        Console.WriteLine("Points shape {0} {1} {2}",points.shape[0], points.shape[1], points.shape[2]);
-        for(int i = 0; i < points.shape[0]; i++)
-        {
-            for(int j = 0 ; j < points.shape[1]; j++)
-            {
-                Console.WriteLine("{0} {1} {2}",points[i][j][0],points[i][j][1], points[i][j][2]);
-            }
-            Console.WriteLine("\n");
-        }
+        // Console.WriteLine("TransformationMatrix");
+        
+        // for(int i = 0 ; i < TransformationMatrix.shape[0]; i++)
+        // {
+        //     for(int j = 0 ; j < TransformationMatrix.shape[1]; j++)
+        //     {
+        //         Console.Write("{0} ",TransformationMatrix[i][j]);
+        //     }
+        //     Console.Write("\n");
+        // }
+            
+        // Console.WriteLine("-------------------");
+        // Console.WriteLine("Transposed Transformation Matrix");
+        // for(int i = 0 ; i < transposedMatrix.shape[0]; i++)
+        // {
+        //     Console.WriteLine("[{0} , {1} , {2}]\n",transposedMatrix[i][0], transposedMatrix[i][1], transposedMatrix[i][2]);
+        // }
 
+
+        int n = points.shape[0];
+        int m = points.shape[1];
+        int p = transposedMatrix.shape[1];
+
+        NDArray warpedPoints = np.zeros(n, m, p);
+
+        // for (int i = 0; i < n; i++)
+        // {
+        //     for (int j = 0; j < m; j++)
+        //     {
+        //         for (int k = 0; k < p; k++)
+        //         {
+        //             warpedPoints[i, j, k] = 0;
+
+        //             for (int l = 0; l < transposedMatrix.shape[0]; l++)
+        //             {
+        //                 warpedPoints[i, j, k] += points[i, j, l] * transposedMatrix[l, k];
+        //             }
+        //         }
+        //     }
+        // }
+        // for(int i = 0 ; i < warpedPoints.shape[0]; i++)
+        // {
+        //     for(int j = 0 ; j < warpedPoints.shape[1]; j++)
+        //     {
+        //         Console.Write("[{0} {1} {2}]\n",warpedPoints[i][j][0],warpedPoints[i][j][1],warpedPoints[i][j][2]);
+        //     }
+        //     Console.WriteLine("--------------------------");
+        // }
+        
+   
         return TransformationMatrix;
     }
     public static Mat DetectEdges(Mat grayImg)

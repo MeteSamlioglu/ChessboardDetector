@@ -93,3 +93,17 @@ class Program
 
 
 }
+  // Mat imgWithPoints = img.Clone();
+
+        // for(int i = 0 ; i < all_intersection_points.shape[0]; i++) 
+        // {
+        //     for(int j = 0; j < all_intersection_points.shape[1]; j++)
+        //     {
+        //         double x = all_intersection_points[i][j][0];
+        //         double y = all_intersection_points[i][j][1];
+
+        //         Cv2.Circle(imgWithPoints, new OpenCvSharp.Point(x, y), 5, new Scalar(0, 255, 0), -1);
+        //     }
+        // }
+        // Cv2.ImShow("Image with Points", imgWithPoints);
+        // Cv2.WaitKey(0);
