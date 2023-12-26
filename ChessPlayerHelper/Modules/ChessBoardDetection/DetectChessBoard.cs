@@ -81,14 +81,120 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,2,5,0,1);
+            var transformation_matrix = ComputeHomography(all_intersection_points,2,3,6,10);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
-       
+            var outliers = DiscardOutliers(warped_points,all_intersection_points);
+            
             iterations =  iterations + 1;
 
         }
         return all_intersection_points;
     }
+
+    public static ValueTuple<NDArray,NDArray>FindBestScale(NDArray values)
+    {
+        NDArray scales = np.arange(1,9);
+         
+        var indices = np.argsort<double>(scales);
+         
+        NDArray sortedArray = scales[indices];
+
+        var scaled_values = np.expand_dims(values, axis : -1) * sortedArray;
+        
+        var diff = np.abs(np.round_(scaled_values) - scaled_values);
+        
+        var inlier_mask = diff < CONFIGURATION.RANSAC.OFFSET_TOLERANCE / scales;
+
+        var numInliers = CalculateNumInliers(inlier_mask);
+
+        var bestNumInliers = np.max(numInliers);
+        
+        var threshold = (1 - CONFIGURATION.RANSAC.BEST_SOLUTION_TOLERANCE) * bestNumInliers;
+        int index = 0;
+        int maxValue = numInliers[0];
+
+        for(int i = 0 ; i < numInliers.shape[0]; i++)
+        {
+            int numInlierValue = numInliers[i];
+            double thresholdValue = (double)threshold;
+            if (numInlierValue > thresholdValue)
+            {
+                if(numInlierValue >= maxValue )
+                {
+                    maxValue = numInlierValue;
+                    index = i;
+                }
+            }
+        }
+        return new ValueTuple<NDArray, NDArray>(sortedArray[index], inlier_mask[$"...", index]);
+    }
+    
+    public static int ArgMax(NDArray array)
+    {
+        if (array.size == 0)
+            throw new ArgumentException("Input array must not be empty.");
+
+        int argmax = 0;
+        dynamic maxVal = array[0];
+
+        for (int i = 1; i < array.size; i++)
+        {
+            dynamic currentVal = array[i];
+            if (currentVal > maxVal)
+            {
+                maxVal = currentVal;
+                argmax = i;
+            }
+        }
+        return argmax;
+    }
+
+    public static NDArray CalculateNumInliers(NDArray inlierMask)
+    {
+        int numMatrices = inlierMask.shape[inlierMask.ndim - 1];
+        int[] numInliers = new int[numMatrices];
+
+        for (int k = 0; k < numMatrices; k++)
+        {
+            int sum = 0;
+            for (int i = 0; i < inlierMask.shape[0]; i++)
+            {
+                for (int j = 0; j < inlierMask.shape[1]; j++)
+                {
+                    sum += inlierMask[i, j, k].Data<bool>()[0] ? 1 : 0;
+                }
+            }
+            numInliers[k] = sum;
+        }
+
+        return np.array(numInliers);
+    }
+    public static ValueTuple<NDArray, NDArray, float, float> DiscardOutliers(NDArray warped_points, NDArray all_intersection_points)
+    {
+        var horizontal = FindBestScale(warped_points[$"...","0"]);
+        var vertical = FindBestScale(warped_points[$"...", "1"]);
+        var horizontal_scale = horizontal.Item1;
+        var horizontal_mask = horizontal.Item2;
+        var vertical_scale = vertical.Item1;
+        var vertical_mask = vertical.Item2;
+    
+        Console.WriteLine("horizontal Scale");
+        Console.WriteLine($"{horizontal_scale}");
+
+        Console.WriteLine("horizontal mask");
+        Console.WriteLine($"{horizontal_mask}");
+
+        Console.WriteLine("vertical Scale");
+        Console.WriteLine($"{vertical_scale}");
+
+        Console.WriteLine("vertical mask");
+        Console.WriteLine($"{vertical_mask}");
+        
+
+
+        return new ValueTuple<NDArray, NDArray,float,float>(warped_points, all_intersection_points, 3.4f, 4.2f);
+    }
+
     public static NDArray ChooseFromRange(int upper_bound, int n = 2)
     {
         var indices = np.arange(upper_bound);
@@ -176,20 +282,10 @@ static class DetectChessBoard
             }
         }
         
-        //Console.WriteLine("{0} {1} {2} ",warpedPoints.shape[0], warpedPoints.shape[1], warpedPoints.shape[2]);
         var HomogenousCoordinates = CoordinatesConverter.FromHomogeneousCoordinates(warpedPoints);
-        //Console.WriteLine("{0} ",HomogenousCoordinates.shape[0]);
-        // for(int i = 0 ; i < HomogenousCoordinates.shape[0]; i++)
-        // {
-        //     for(int j = 0 ; j < HomogenousCoordinates.shape[1]; j++)
-        //     {
-        //         Console.Write("[{0} {1}]\n",HomogenousCoordinates[i][j][0],HomogenousCoordinates[i][j][1]);
-        //     }
-        //     Console.WriteLine("--------------------------");
-        // }
-        
    
-        return TransformationMatrix;
+   
+        return HomogenousCoordinates;
     }
     public static Mat DetectEdges(Mat grayImg)
     { 

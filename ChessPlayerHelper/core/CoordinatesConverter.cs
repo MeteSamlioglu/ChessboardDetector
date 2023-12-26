@@ -48,17 +48,6 @@ namespace core.OpenCvNumSharpConverter
         // Divide the first two columns by the homogeneous coordinate
         var result = coordinates[$":, :, :{lastDim}"] / homogeneousColumn[$"...", np.newaxis];
 
-        
-        Console.WriteLine(" Shape Homogenous {0} {1} {2}",result.shape[0],result.shape[1],result.shape[2]);
-
-        for(int i = 0 ; i < result.shape[0]; i++)
-        {
-            for(int j = 0 ; j < result.shape[1]; j++)
-            {
-                Console.WriteLine("[{0} {1}]",result[i][j][0], result[i][j][1]);
-            }
-            Console.WriteLine("\n");
-        }
         return result;
     }
 
