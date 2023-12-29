@@ -15,6 +15,7 @@ using Accord.Math;
 using Dbscan.RBush;
 using System.Xaml;
 using Microsoft.VisualBasic.Devices;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Modules
 {
@@ -70,7 +71,7 @@ static class DetectChessBoard
 
         var all_intersection_points = _get_intersection_points(horizontal_lines,vertical_lines);
         
-        var best_num_inliers = 0;
+        int best_num_inliers = 0;
         int iterations = 0;
         while (iterations < 200 && best_num_inliers < 30)
         {   
@@ -81,25 +82,82 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,2,4,1,10);
+            var transformation_matrix = ComputeHomography(all_intersection_points,3,8,7,8);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
             var warped_points_ = outliers.Item1;
+            
             var intersection_points_ = outliers.Item2;
+            
             var horizontal_scale = outliers.Item3;
+            
             var vertical_scale = outliers.Item4;     
             
             var reshapedShape = np.array(new int[] { warped_points_.shape[0],warped_points_.shape[1]});
-            var num_inliers = np.prod(reshapedShape);
-
-
+            
+            int num_inliers = np.prod(reshapedShape);
+            
+            if(num_inliers > best_num_inliers)
+            {
+                warped_points_ *= np.array(new double[] { horizontal_scale, vertical_scale });
+                // Console.WriteLine("warped_points");
+                // Console.WriteLine($"{warped_points_}");
+                // Console.WriteLine("Shape {0} {1} {2}",warped_points_.shape[0], warped_points_.shape[1], warped_points_.shape[2]);
+                // Console.WriteLine("----------------------");
+                var configuration = QuantizePoints(warped_points_,intersection_points_);
+            }
+           
             iterations =  iterations + 1;
 
         }
         return all_intersection_points;
     }
+    
+    public static ValueTuple<ValueTuple<int, int, int,int>, NDArray,NDArray,NDArray,NDArray>QuantizePoints(NDArray warped_scaled_points, NDArray intersection_points)
+    {
 
+        Console.WriteLine("Girdim");
+        var mean_col_xs = warped_scaled_points[$"...", 0].mean(axis : 0);
+        var mean_row_ys = warped_scaled_points[$"...", 1].mean(axis : 1);
+
+        var col_xs = np.round_(mean_col_xs).astype(np.int32);
+        var row_ys = np.round_(mean_row_ys).astype(np.int32);
+        Console.WriteLine("Preprocessed");
+        Console.WriteLine("col_xs");
+        Console.WriteLine($"{col_xs}");
+
+        Console.WriteLine("row_ys");
+        Console.WriteLine($"{row_ys}");
+        
+        var UniqueRes = NumSharpMethods.Unique(col_xs, row_ys);
+        var col_xs_ = UniqueRes.Item1;
+        var col_indices = UniqueRes.Item2;
+        var row_ys_ =  UniqueRes.Item3;
+        var row_indices = UniqueRes.Item4;
+        
+        Console.WriteLine("Processed");
+
+        Console.WriteLine($"{col_xs_}");
+        
+        Console.WriteLine($"{col_indices}");
+        
+        Console.WriteLine($"{row_ys_}");
+        
+        Console.WriteLine($"{row_indices}");
+
+        Console.WriteLine("-------------------------");
+
+
+        // var cols =  np.unique(col_xs);
+        // var rows = np.unique(row_ys);
+
+        ValueTuple<int,int,int,int> deneme = new ValueTuple<int,int,int,int>(3,4,5,6); 
+        
+
+        return new ValueTuple<ValueTuple<int,int,int,int>,NDArray, NDArray,NDArray,NDArray>
+        (deneme,intersection_points,intersection_points,intersection_points, intersection_points);
+    }
     public static ValueTuple<NDArray,NDArray>FindBestScale(NDArray values)
     {
         NDArray scales = np.arange(1,9);

@@ -159,5 +159,36 @@ namespace core.OpenCvNumSharpConverter
             
             }
         }
+        public static ValueTuple<NDArray, NDArray, NDArray, NDArray> Unique(NDArray col_xs, NDArray row_ys)
+        {
+                 
+            int[] col_xs_ = col_xs.ToArray<int>();
+            int[] row_ys_ = row_ys.ToArray<int>();
+
+            var colXsWithIndices = col_xs_.Select((value, index) => new { Value = value, Index = index })
+                                        .GroupBy(item => item.Value)
+                                        .Select(group => group.First());
+
+            var rowYsWithIndices = row_ys_.Select((value, index) => new { Value = value, Index = index })
+                                        .GroupBy(item => item.Value)
+                                        .Select(group => group.First());
+
+            int[] uniqueColXs = colXsWithIndices.Select(item => item.Value).ToArray();
+            int[] colIndices = colXsWithIndices.Select(item => item.Index).ToArray();
+
+            int[] uniqueRowYs = rowYsWithIndices.Select(item => item.Value).ToArray();
+            int[] rowIndices = rowYsWithIndices.Select(item => item.Index).ToArray();
+            
+            NDArray _col_xs = np.array(uniqueColXs);
+            
+            NDArray _row_ys = np.array(uniqueRowYs);
+            
+            NDArray col_indices = np.array(colIndices);
+            
+            NDArray row_indices = np.array(rowIndices);
+
+            return new ValueTuple<NDArray, NDArray, NDArray, NDArray>(_col_xs, col_indices, _row_ys, row_indices); 
+        }
+        
     }
 }
