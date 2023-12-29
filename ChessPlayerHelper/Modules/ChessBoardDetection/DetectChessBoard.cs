@@ -81,7 +81,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,1,6,0,8);
+            var transformation_matrix = ComputeHomography(all_intersection_points,4,9,0,2);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -178,29 +178,19 @@ static class DetectChessBoard
     {
         var horizontal = FindBestScale(warped_points[$"...","0"]);
         var vertical = FindBestScale(warped_points[$"...", "1"]);
-       
-        Console.WriteLine("horizontal\n");
-        Console.WriteLine($"{horizontal}");
-
         
         var horizontal_scale = horizontal.Item1;
         var horizontal_mask = horizontal.Item2;
         var vertical_scale = vertical.Item1;
         var vertical_mask = vertical.Item2;
         var mask = np.logical_and(horizontal_mask, vertical_mask);
-    
+
         /* Keep rows / cols that have more than %50 inliers */
         NDArray rows_to_consider = mask[$":",":","-1"];
         
         var num_of_rows_to_consider = NumSharpMethods.AnySum(rows_to_consider, -1);
         var num_of_columns_to_consider = NumSharpMethods.AnySum(mask, -2);
         
-        // Console.WriteLine("rows"); 
-        // Console.WriteLine("{0}",num_of_rows_to_consider);   
-        // Console.WriteLine("columns"); 
-        // Console.WriteLine("{0}",num_of_columns_to_consider);   
-        
-        /* NOT CORRECT FOR 1 6 0 8 */
         //var rows_to_keep = mask.sum(axis : -1) / num_of_rows_to_consider > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
         // var cols_to_keep = mask.sum(axis : -2) / num_cols_to_consider > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
 
