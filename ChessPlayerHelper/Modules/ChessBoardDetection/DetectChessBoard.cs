@@ -81,7 +81,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,2,3,6,10);
+            var transformation_matrix = ComputeHomography(all_intersection_points,1,6,0,8);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -119,11 +119,16 @@ static class DetectChessBoard
             double thresholdValue = (double)threshold;
             if (numInlierValue > thresholdValue)
             {
-                if(numInlierValue >= maxValue )
-                {
-                    maxValue = numInlierValue;
-                    index = i;
-                }
+                maxValue = numInlierValue;
+                index = i;
+                break;
+                // if(numInlierValue >= maxValue )
+                // {
+                //     maxValue = numInlierValue;
+                //     index = i;
+                //     Console.WriteLine("numInlierValue {0}, thresholdValue{1} index {2}",numInliers, thresholdValue, index);
+
+                // }
             }
         }
         return new ValueTuple<NDArray, NDArray>(sortedArray[index], inlier_mask[$"...", index]);
@@ -173,24 +178,34 @@ static class DetectChessBoard
     {
         var horizontal = FindBestScale(warped_points[$"...","0"]);
         var vertical = FindBestScale(warped_points[$"...", "1"]);
+       
+        Console.WriteLine("horizontal\n");
+        Console.WriteLine($"{horizontal}");
+
+        
         var horizontal_scale = horizontal.Item1;
         var horizontal_mask = horizontal.Item2;
         var vertical_scale = vertical.Item1;
         var vertical_mask = vertical.Item2;
+        var mask = np.logical_and(horizontal_mask, vertical_mask);
     
-        Console.WriteLine("horizontal Scale");
-        Console.WriteLine($"{horizontal_scale}");
-
-        Console.WriteLine("horizontal mask");
-        Console.WriteLine($"{horizontal_mask}");
-
-        Console.WriteLine("vertical Scale");
-        Console.WriteLine($"{vertical_scale}");
-
-        Console.WriteLine("vertical mask");
-        Console.WriteLine($"{vertical_mask}");
+        /* Keep rows / cols that have more than %50 inliers */
+        NDArray rows_to_consider = mask[$":",":","-1"];
         
+        var num_of_rows_to_consider = NumSharpMethods.AnySum(rows_to_consider, -1);
+        var num_of_columns_to_consider = NumSharpMethods.AnySum(mask, -2);
+        
+        // Console.WriteLine("rows"); 
+        // Console.WriteLine("{0}",num_of_rows_to_consider);   
+        // Console.WriteLine("columns"); 
+        // Console.WriteLine("{0}",num_of_columns_to_consider);   
+        
+        /* NOT CORRECT FOR 1 6 0 8 */
+        //var rows_to_keep = mask.sum(axis : -1) / num_of_rows_to_consider > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
+        // var cols_to_keep = mask.sum(axis : -2) / num_cols_to_consider > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
 
+        // var warped_points_ = warped_points[rows_to_keep][$":",cols_to_keep];
+        // var intersection_points_ = all_intersection_points[rows_to_keep][$":",cols_to_keep];
 
         return new ValueTuple<NDArray, NDArray,float,float>(warped_points, all_intersection_points, 3.4f, 4.2f);
     }
@@ -352,7 +367,6 @@ static class DetectChessBoard
             
             var treshold = DegreesToRadians(CONFIGURATION.LINE_DETECTION.DIAGONAL_LINE_ELIMINATION_THRESHOLD_DEGREES);
             
-            Console.WriteLine("Treshold  {0}",treshold);
             
             var vmask = np.abs(hesse_form[$":", "1"]) < treshold;
             var hmask = np.abs(hesse_form[$":", "1"] - (np.pi / 2)) < treshold;

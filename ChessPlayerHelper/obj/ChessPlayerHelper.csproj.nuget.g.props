@@ -13,6 +13,7 @@
     <SourceRoot Include="C:\Users\Monster\.nuget\packages\" />
   </ItemGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)torchsharp\0.101.5\buildTransitive\net6.0\TorchSharp.props" Condition="Exists('$(NuGetPackageRoot)torchsharp\0.101.5\buildTransitive\net6.0\TorchSharp.props')" />
     <Import Project="$(NuGetPackageRoot)opencvsharp4.runtime.win\4.8.0.20230708\build\net5.0\OpenCvSharp4.runtime.win.props" Condition="Exists('$(NuGetPackageRoot)opencvsharp4.runtime.win\4.8.0.20230708\build\net5.0\OpenCvSharp4.runtime.win.props')" />
   </ImportGroup>
 </Project>

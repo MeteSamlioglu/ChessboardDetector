@@ -37,3 +37,14 @@ C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\obj\Debug
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Dbscan.dll
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Dbscan.RBush.dll
 C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\RBush.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\Google.Protobuf.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\ICSharpCode.SharpZipLib.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\SkiaSharp.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\TorchSharp.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\runtimes\win-arm64\native\libSkiaSharp.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\runtimes\win-x86\native\libSkiaSharp.dll
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\runtimes\linux-x64\native\libLibTorchSharp.so
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\runtimes\osx-x64\native\libLibTorchSharp.dylib
+C:\Users\Monster\Desktop\Graduation Project1\Project\ChessPlayerHelper\bin\Debug\net6.0-windows\runtimes\win-x64\native\LibTorchSharp.dll

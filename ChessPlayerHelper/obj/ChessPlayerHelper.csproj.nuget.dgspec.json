@@ -83,6 +83,10 @@
             "OpenCvSharp4.runtime.win": {
               "target": "Package",
               "version": "[4.8.0.20230708, )"
+            },
+            "TorchSharp": {
+              "target": "Package",
+              "version": "[0.101.5, )"
             }
           },
           "imports": [
