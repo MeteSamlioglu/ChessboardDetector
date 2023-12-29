@@ -94,7 +94,6 @@ static class DetectChessBoard
             var num_inliers = np.prod(reshapedShape);
 
 
-
             iterations =  iterations + 1;
 
         }
