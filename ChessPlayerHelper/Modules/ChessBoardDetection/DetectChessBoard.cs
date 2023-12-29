@@ -81,10 +81,20 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,3,6,1,2);
+            var transformation_matrix = ComputeHomography(all_intersection_points,2,4,1,10);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
+            var warped_points_ = outliers.Item1;
+            var intersection_points_ = outliers.Item2;
+            var horizontal_scale = outliers.Item3;
+            var vertical_scale = outliers.Item4;     
+            
+            var reshapedShape = np.array(new int[] { warped_points_.shape[0],warped_points_.shape[1]});
+            var num_inliers = np.prod(reshapedShape);
+
+
+
             iterations =  iterations + 1;
 
         }
