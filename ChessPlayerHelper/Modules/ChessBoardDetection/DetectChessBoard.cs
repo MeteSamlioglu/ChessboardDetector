@@ -81,7 +81,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,4,9,0,2);
+            var transformation_matrix = ComputeHomography(all_intersection_points,3,6,1,2);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -122,13 +122,6 @@ static class DetectChessBoard
                 maxValue = numInlierValue;
                 index = i;
                 break;
-                // if(numInlierValue >= maxValue )
-                // {
-                //     maxValue = numInlierValue;
-                //     index = i;
-                //     Console.WriteLine("numInlierValue {0}, thresholdValue{1} index {2}",numInliers, thresholdValue, index);
-
-                // }
             }
         }
         return new ValueTuple<NDArray, NDArray>(sortedArray[index], inlier_mask[$"...", index]);
@@ -174,7 +167,7 @@ static class DetectChessBoard
 
         return np.array(numInliers);
     }
-    public static ValueTuple<NDArray, NDArray, float, float> DiscardOutliers(NDArray warped_points, NDArray all_intersection_points)
+    public static ValueTuple<NDArray, NDArray, double, double> DiscardOutliers(NDArray warped_points, NDArray all_intersection_points)
     {
         var horizontal = FindBestScale(warped_points[$"...","0"]);
         var vertical = FindBestScale(warped_points[$"...", "1"]);
@@ -191,13 +184,15 @@ static class DetectChessBoard
         var num_of_rows_to_consider = NumSharpMethods.AnySum(rows_to_consider, -1);
         var num_of_columns_to_consider = NumSharpMethods.AnySum(mask, -2);
         
-        //var rows_to_keep = mask.sum(axis : -1) / num_of_rows_to_consider > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
-        // var cols_to_keep = mask.sum(axis : -2) / num_cols_to_consider > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
-
-        // var warped_points_ = warped_points[rows_to_keep][$":",cols_to_keep];
-        // var intersection_points_ = all_intersection_points[rows_to_keep][$":",cols_to_keep];
-
-        return new ValueTuple<NDArray, NDArray,float,float>(warped_points, all_intersection_points, 3.4f, 4.2f);
+        var rows_to_keep = (NumSharpMethods.Sum(mask, -1) / (double)num_of_rows_to_consider) > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
+        
+        var columns_to_keep = (NumSharpMethods.Sum(mask, -2) / (double)num_of_columns_to_consider) > CONFIGURATION.MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE;
+        
+        var WarpedPoints = NumSharpMethods.SliceNDArray(warped_points,rows_to_keep,columns_to_keep);
+        
+        var IntersectionPoints =  NumSharpMethods.SliceNDArray(all_intersection_points, rows_to_keep, columns_to_keep);
+    
+        return new ValueTuple<NDArray, NDArray,int,int>(WarpedPoints, IntersectionPoints, horizontal_scale, vertical_scale);
     }
 
     public static NDArray ChooseFromRange(int upper_bound, int n = 2)
@@ -244,17 +239,6 @@ static class DetectChessBoard
 
         var transformation_matrix = Cv2.FindHomography(sourceMat, destinationMat);
         var transformation_matrix_ = MatArrayConverter.MatToNDArray(transformation_matrix);
-
-        // Console.WriteLine("Transformation Mat");
-        // for(int i = 0 ; i < transformation_matrix_.shape[0]; i++)
-        // {
-        //     for(int j = 0 ; j < transformation_matrix_.shape[1]; j++)
-        //     {
-        //         Console.WriteLine("{0} ",transformation_matrix_[i][j]);
-        //     }
-        //     Console.WriteLine("\n");
-        // }
-        
 
         return transformation_matrix_;
     }
@@ -534,9 +518,6 @@ public static NDArray _get_intersection_points(NDArray horizontal_lines, NDArray
     var rho2 = verticalLinesTransposed[0];
     var theta2 = verticalLinesTransposed[1];
     
-   
-
-
     int numRows = rho1.shape[0];
     int numCols = rho2.shape[0];
 

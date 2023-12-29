@@ -50,7 +50,7 @@ namespace Data
             }
         }
 
-        public static readonly float MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE = 0.7F;
+        public static readonly double MAX_OUTLIER_INTERSECTION_POINT_RATIO_PER_LINE = 0.7F;
 
         public static class RANSAC
         {

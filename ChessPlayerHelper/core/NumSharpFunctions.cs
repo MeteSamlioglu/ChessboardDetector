@@ -71,6 +71,93 @@ namespace core.OpenCvNumSharpConverter
             
             return AnySumResult;
         }
+        
+        public static NDArray Sum(NDArray SlicedNDArray, int axis)
+        {
+             NDArray SumResult = np.zeros((SlicedNDArray.shape[0],1));
+            
+            switch(axis)
+            {
+                case -1:
+
+                    for(int i = 0 ; i < SlicedNDArray.shape[0]; i++)
+                    {
+                        int res = 0;
+                        for(int j = 0; j < SlicedNDArray.shape[1]; j++)
+                        {
+                            if(SlicedNDArray[i][j] == true)
+                            {
+                               res++;
+                            }
+                        }
+                        SumResult[i] = res;
+                    }
+                break;
+                case -2:     
+                    int numCols = SlicedNDArray.shape[1];
+                    SumResult = np.zeros(new Shape(numCols, 1));
+
+                    for (int col = 0; col < numCols; col++)
+                    {
+                        int res_column = 0;
+                        for (int row = 0; row < SlicedNDArray.shape[0]; row++)
+                        {
+                            if (SlicedNDArray[row, col] == true)
+                            {
+                                res_column++;
+                            }
+                        }
+                        SumResult[col] = res_column;
+                    }
+                break;                 
+            }
+            
+            return SumResult;
+        }
     
+        public static NDArray SliceNDArray(NDArray arr, NDArray rows_to_slice, NDArray cols_to_slice )
+        {
+            List<int> rowIndices = new List<int>();
+            List<int> columnIndices = new List<int>();
+            
+            for(int i = 0 ; i < rows_to_slice.shape[0]; i++)
+                if(rows_to_slice[i][0])
+                     rowIndices.Add(i);
+            
+            for(int i = 0 ; i < cols_to_slice.shape[0]; i++)
+                if(cols_to_slice[i][0])
+                    columnIndices.Add(i);
+
+            
+            if(columnIndices.Count != 0 && rowIndices.Count != 0)
+            {
+                NDArray slicedArray = np.zeros((rowIndices.Count, columnIndices.Count, 2));
+                
+                for(int i = 0 ; i < rowIndices.Count; i++)
+                {
+                    int row_index = rowIndices[i];
+                    int row = i;
+                    for(int j = 0; j < columnIndices.Count; j++)
+                    {
+                    int col_index = columnIndices[j]; 
+                    int col = j;
+                    
+                    var point1 = arr[row_index][col_index][0];
+                    var point2 = arr[row_index][col_index][1];
+                    
+                    slicedArray[row][col][0] = point1;
+                    slicedArray[row][col][1] = point2;
+                    }
+                }
+                
+                return slicedArray;
+            }
+            else
+            {
+                NDArray emptyArray = np.empty(rowIndices.Count,columnIndices.Count , 2);
+                return emptyArray;            
+            
+            }
+        }
     }
 }
