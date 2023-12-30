@@ -82,7 +82,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,3,8,7,8);
+            var transformation_matrix = ComputeHomography(all_intersection_points,3,4,3,8);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -123,32 +123,37 @@ static class DetectChessBoard
 
         var col_xs = np.round_(mean_col_xs).astype(np.int32);
         var row_ys = np.round_(mean_row_ys).astype(np.int32);
-        Console.WriteLine("Preprocessed");
-        Console.WriteLine("col_xs");
-        Console.WriteLine($"{col_xs}");
-
-        Console.WriteLine("row_ys");
-        Console.WriteLine($"{row_ys}");
         
         var UniqueRes = NumSharpMethods.Unique(col_xs, row_ys);
         var col_xs_ = UniqueRes.Item1;
         var col_indices = UniqueRes.Item2;
         var row_ys_ =  UniqueRes.Item3;
         var row_indices = UniqueRes.Item4;
-        
-        Console.WriteLine("Processed");
 
-        Console.WriteLine($"{col_xs_}");
-        
-        Console.WriteLine($"{col_indices}");
-        
-        Console.WriteLine($"{row_ys_}");
-        
-        Console.WriteLine($"{row_indices}");
+        var intersection_points_ = NumSharpMethods.SliceIntegerNDArray(intersection_points,row_indices, col_indices);
 
-        Console.WriteLine("-------------------------");
+        int xmin = col_xs_.min().astype(NPTypeCode.Int32).GetData<int>()[0];;
+        int xmax = col_xs_.max().astype(NPTypeCode.Int32).GetData<int>()[0];
+        int ymin = row_ys_.min().astype(NPTypeCode.Int32).GetData<int>()[0];
+        int ymax = row_ys.max().astype(NPTypeCode.Int32).GetData<int>()[0];
 
+       //Ensure we a have a maximum of 9 rows/cols
+        while( (xmax - xmin) > 9)
+        {
+            xmax -= 1;
+            xmin += 1;
+        }
+        while ((ymax - ymin) > 9)
+        {
+            ymax -= 1;
+            ymin += 1;
+        }
+        
+        Console.WriteLine("xmin {0} xmax{1} ymin {2} ymax {3}", xmin,xmax,ymin,ymax);
 
+        // var col_mask = np.logical_and(col_xs_ >= xmin, col_xs_ <= xmax);
+        // var row_mask = np.logical_and(row_ys_ >= xmin, row_ys_ <= xmax);
+        
         // var cols =  np.unique(col_xs);
         // var rows = np.unique(row_ys);
 

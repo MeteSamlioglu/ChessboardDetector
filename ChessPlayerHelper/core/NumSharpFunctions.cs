@@ -117,6 +117,7 @@ namespace core.OpenCvNumSharpConverter
     
         public static NDArray SliceNDArray(NDArray arr, NDArray rows_to_slice, NDArray cols_to_slice )
         {
+            
             List<int> rowIndices = new List<int>();
             List<int> columnIndices = new List<int>();
             
@@ -127,7 +128,7 @@ namespace core.OpenCvNumSharpConverter
             for(int i = 0 ; i < cols_to_slice.shape[0]; i++)
                 if(cols_to_slice[i][0])
                     columnIndices.Add(i);
-
+            
             
             if(columnIndices.Count != 0 && rowIndices.Count != 0)
             {
@@ -159,6 +160,51 @@ namespace core.OpenCvNumSharpConverter
             
             }
         }
+        
+        public static NDArray SliceIntegerNDArray(NDArray arr, NDArray rows_to_slice, NDArray cols_to_slice )
+        {
+            
+            List<int> rowIndices = new List<int>();
+            List<int> columnIndices = new List<int>();
+            
+            for(int i = 0 ; i < rows_to_slice.shape[0]; i++)
+                     rowIndices.Add(i);
+            
+            for(int i = 0 ; i < cols_to_slice.shape[0]; i++)
+                    columnIndices.Add(i);
+            
+            
+            if(columnIndices.Count != 0 && rowIndices.Count != 0)
+            {
+                NDArray slicedArray = np.zeros((rowIndices.Count, columnIndices.Count, 2));
+                
+                for(int i = 0 ; i < rowIndices.Count; i++)
+                {
+                    int row_index = rowIndices[i];
+                    int row = i;
+                    for(int j = 0; j < columnIndices.Count; j++)
+                    {
+                    int col_index = columnIndices[j]; 
+                    int col = j;
+                    
+                    var point1 = arr[row_index][col_index][0];
+                    var point2 = arr[row_index][col_index][1];
+                    
+                    slicedArray[row][col][0] = point1;
+                    slicedArray[row][col][1] = point2;
+                    }
+                }
+                
+                return slicedArray;
+            }
+            else
+            {
+                NDArray emptyArray = np.empty(rowIndices.Count,columnIndices.Count , 2);
+                return emptyArray;            
+            
+            }
+        }
+    
         public static ValueTuple<NDArray, NDArray, NDArray, NDArray> Unique(NDArray col_xs, NDArray row_ys)
         {
                  
