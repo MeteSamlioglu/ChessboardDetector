@@ -236,5 +236,57 @@ namespace core.OpenCvNumSharpConverter
             return new ValueTuple<NDArray, NDArray, NDArray, NDArray>(_col_xs, col_indices, _row_ys, row_indices); 
         }
         
+        public static NDArray Mask(NDArray arr, int min, int max)
+        {
+            List<bool> maskMin = new List<bool>();
+            
+            List<bool> maskMax = new List<bool>();
+            
+            for(int i = 0 ; i < arr.shape[0]; i++)
+            {
+                int var = arr[i];
+                                
+                if(var >= min)
+                    maskMin.Add(true);
+                
+                else
+                    maskMin.Add(false);
+            }
+
+            for(int i = 0 ; i < arr.shape[0]; i++)
+            {
+                int var = arr[i];
+                
+                if(var <= max)
+                    maskMax.Add(true);
+                
+                else
+                    maskMax.Add(false);
+            }
+            
+            NDArray mask1 = np.array(maskMin);
+            
+            NDArray mask2 = np.array(maskMax);
+            
+            var col_mask = np.logical_and(mask1, mask2);
+            
+            return col_mask;
+        }
+
+        public static NDArray Slice1DBoolean(NDArray arr, NDArray bool_arr)
+        {
+            List<int> elements_to_consider = new List<int>();
+            
+            for(int i = 0 ; i < bool_arr.shape[0]; i++)
+            {
+                if(bool_arr[i])
+                    elements_to_consider.Add(arr[i]);
+            }
+
+            NDArray slicedArr = np.array(elements_to_consider);
+            
+            return slicedArr;
+
+        } 
     }
 }

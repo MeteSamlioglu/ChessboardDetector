@@ -82,7 +82,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,3,4,3,8);
+            var transformation_matrix = ComputeHomography(all_intersection_points,3,9,2,9);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -90,9 +90,9 @@ static class DetectChessBoard
             
             var intersection_points_ = outliers.Item2;
             
-            var horizontal_scale = outliers.Item3;
+            var horizontal_scale = (int)outliers.Item3;
             
-            var vertical_scale = outliers.Item4;     
+            var vertical_scale = (int)outliers.Item4;     
             
             var reshapedShape = np.array(new int[] { warped_points_.shape[0],warped_points_.shape[1]});
             
@@ -100,12 +100,19 @@ static class DetectChessBoard
             
             if(num_inliers > best_num_inliers)
             {
-                warped_points_ *= np.array(new double[] { horizontal_scale, vertical_scale });
-                // Console.WriteLine("warped_points");
-                // Console.WriteLine($"{warped_points_}");
-                // Console.WriteLine("Shape {0} {1} {2}",warped_points_.shape[0], warped_points_.shape[1], warped_points_.shape[2]);
-                // Console.WriteLine("----------------------");
-                var configuration = QuantizePoints(warped_points_,intersection_points_);
+                Console.WriteLine("warped_points");
+                Console.WriteLine($"{warped_points_}");
+                Console.WriteLine($"Type {0}",warped_points_.dtype);
+                
+                var mult_factor = np.array(new int[] { horizontal_scale, vertical_scale });
+                warped_points_ *= mult_factor;
+                
+                Console.WriteLine("mult factor {0} type {1}",mult_factor, mult_factor.dtype);
+                
+                Console.WriteLine("warped_points");
+                Console.WriteLine($"{warped_points_}");
+                
+                //var configuration = QuantizePoints(warped_points_,intersection_points_);
             }
            
             iterations =  iterations + 1;
@@ -121,6 +128,9 @@ static class DetectChessBoard
         var mean_col_xs = warped_scaled_points[$"...", 0].mean(axis : 0);
         var mean_row_ys = warped_scaled_points[$"...", 1].mean(axis : 1);
 
+        Console.WriteLine($"{warped_scaled_points}");
+        // Console.WriteLine("mean_col_xs {0}, Type {1}",mean_col_xs, mean_col_xs.dtype);
+
         var col_xs = np.round_(mean_col_xs).astype(np.int32);
         var row_ys = np.round_(mean_row_ys).astype(np.int32);
         
@@ -131,7 +141,10 @@ static class DetectChessBoard
         var row_indices = UniqueRes.Item4;
 
         var intersection_points_ = NumSharpMethods.SliceIntegerNDArray(intersection_points,row_indices, col_indices);
-
+        
+        Console.WriteLine("intersection_points");
+        Console.WriteLine($"{intersection_points_}");
+        
         int xmin = col_xs_.min().astype(NPTypeCode.Int32).GetData<int>()[0];;
         int xmax = col_xs_.max().astype(NPTypeCode.Int32).GetData<int>()[0];
         int ymin = row_ys_.min().astype(NPTypeCode.Int32).GetData<int>()[0];
@@ -149,15 +162,27 @@ static class DetectChessBoard
             ymin += 1;
         }
         
-        Console.WriteLine("xmin {0} xmax{1} ymin {2} ymax {3}", xmin,xmax,ymin,ymax);
-
-        // var col_mask = np.logical_and(col_xs_ >= xmin, col_xs_ <= xmax);
-        // var row_mask = np.logical_and(row_ys_ >= xmin, row_ys_ <= xmax);
+        var col_mask = NumSharpMethods.Mask(col_xs_,xmin, xmax);
+        var row_mask = NumSharpMethods.Mask(row_ys_,xmin, xmax);
         
-        // var cols =  np.unique(col_xs);
-        // var rows = np.unique(row_ys);
+        var colXs = NumSharpMethods.Slice1DBoolean(col_xs_,col_mask);
 
-        ValueTuple<int,int,int,int> deneme = new ValueTuple<int,int,int,int>(3,4,5,6); 
+        var rowYs = NumSharpMethods.Slice1DBoolean(row_ys_,row_mask);
+        
+        Console.WriteLine("col_mask");
+        Console.WriteLine($"{col_mask}");
+        
+        Console.WriteLine("row_mask");
+        Console.WriteLine($"{row_mask}");
+        
+        Console.WriteLine("colXs");
+        Console.WriteLine($"{colXs}");
+        
+        // Console.WriteLine("rowYs");
+        // Console.WriteLine($"{rowYs}");
+
+
+        ValueTuple<int,int,int,int> deneme = new ValueTuple<int,int,int,int>(4,5,2,3); 
         
 
         return new ValueTuple<ValueTuple<int,int,int,int>,NDArray, NDArray,NDArray,NDArray>
