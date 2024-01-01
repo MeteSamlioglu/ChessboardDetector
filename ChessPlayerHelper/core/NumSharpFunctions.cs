@@ -275,18 +275,47 @@ namespace core.OpenCvNumSharpConverter
 
         public static NDArray Slice1DBoolean(NDArray arr, NDArray bool_arr)
         {
-            List<int> elements_to_consider = new List<int>();
             
-            for(int i = 0 ; i < bool_arr.shape[0]; i++)
-            {
-                if(bool_arr[i])
-                    elements_to_consider.Add(arr[i]);
-            }
-
-            NDArray slicedArr = np.array(elements_to_consider);
             
-            return slicedArr;
+                List<int> elements_to_consider = new List<int>();
+                
+                for(int i = 0 ; i < bool_arr.shape[0]; i++)
+                {
+                    if(bool_arr[i])
+                        elements_to_consider.Add(arr[i]);
+                }
 
+                if(elements_to_consider.Count > 0)
+                {
+                    NDArray slicedArr = np.array(elements_to_consider);
+                    
+                    return slicedArr;
+                }
+                else
+                {
+          
+                    NDArray emptyArray = np.empty(elements_to_consider.Count,1);
+                    return emptyArray;
+                }
+            
         } 
+
+
+        public static NDArray MultNDArray(NDArray arr, int horizontal_scale, int vertical_scale)
+        {
+            
+            for(int i = 0 ; i < arr.shape[0]; i++)
+            {
+                for(int j = 0 ; j < arr.shape[1]; j++)
+                {
+                    var element1 = arr[i][j][0] * horizontal_scale;
+                    var element2 = arr[i][j][1] * vertical_scale;
+
+                    arr[i][j][0] = element1;
+                    arr[i][j][1] = element2;
+                }
+            }
+            return arr;
+        }
     }
 }

@@ -82,7 +82,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,3,9,2,9);
+            var transformation_matrix = ComputeHomography(all_intersection_points,4,5,3,7);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -100,19 +100,11 @@ static class DetectChessBoard
             
             if(num_inliers > best_num_inliers)
             {
-                Console.WriteLine("warped_points");
-                Console.WriteLine($"{warped_points_}");
-                Console.WriteLine($"Type {0}",warped_points_.dtype);
-                
-                var mult_factor = np.array(new int[] { horizontal_scale, vertical_scale });
-                warped_points_ *= mult_factor;
-                
-                Console.WriteLine("mult factor {0} type {1}",mult_factor, mult_factor.dtype);
-                
-                Console.WriteLine("warped_points");
-                Console.WriteLine($"{warped_points_}");
-                
-                //var configuration = QuantizePoints(warped_points_,intersection_points_);
+             
+
+                var multArray = NumSharpMethods.MultNDArray(warped_points_, horizontal_scale, vertical_scale);
+     
+                var configuration = QuantizePoints(warped_points_,intersection_points_);
             }
            
             iterations =  iterations + 1;
@@ -121,6 +113,7 @@ static class DetectChessBoard
         return all_intersection_points;
     }
     
+
     public static ValueTuple<ValueTuple<int, int, int,int>, NDArray,NDArray,NDArray,NDArray>QuantizePoints(NDArray warped_scaled_points, NDArray intersection_points)
     {
 
@@ -128,13 +121,17 @@ static class DetectChessBoard
         var mean_col_xs = warped_scaled_points[$"...", 0].mean(axis : 0);
         var mean_row_ys = warped_scaled_points[$"...", 1].mean(axis : 1);
 
-        Console.WriteLine($"{warped_scaled_points}");
+        // Console.WriteLine($"{warped_scaled_points}");
         // Console.WriteLine("mean_col_xs {0}, Type {1}",mean_col_xs, mean_col_xs.dtype);
 
-        var col_xs = np.round_(mean_col_xs).astype(np.int32);
-        var row_ys = np.round_(mean_row_ys).astype(np.int32);
+         var col_xs = np.round_(mean_col_xs).astype(np.int32);
+         var row_ys = np.round_(mean_row_ys).astype(np.int32);
+
+        // Console.WriteLine($"{col_xs}");  
         
-        var UniqueRes = NumSharpMethods.Unique(col_xs, row_ys);
+        // Console.WriteLine($"{row_ys}");  
+
+       var UniqueRes = NumSharpMethods.Unique(col_xs, row_ys);
         var col_xs_ = UniqueRes.Item1;
         var col_indices = UniqueRes.Item2;
         var row_ys_ =  UniqueRes.Item3;
@@ -142,8 +139,8 @@ static class DetectChessBoard
 
         var intersection_points_ = NumSharpMethods.SliceIntegerNDArray(intersection_points,row_indices, col_indices);
         
-        Console.WriteLine("intersection_points");
-        Console.WriteLine($"{intersection_points_}");
+        // Console.WriteLine("intersection_points");
+        // Console.WriteLine($"{intersection_points_}");
         
         int xmin = col_xs_.min().astype(NPTypeCode.Int32).GetData<int>()[0];;
         int xmax = col_xs_.max().astype(NPTypeCode.Int32).GetData<int>()[0];
@@ -166,7 +163,7 @@ static class DetectChessBoard
         var row_mask = NumSharpMethods.Mask(row_ys_,xmin, xmax);
         
         var colXs = NumSharpMethods.Slice1DBoolean(col_xs_,col_mask);
-
+ 
         var rowYs = NumSharpMethods.Slice1DBoolean(row_ys_,row_mask);
         
         Console.WriteLine("col_mask");
@@ -177,9 +174,9 @@ static class DetectChessBoard
         
         Console.WriteLine("colXs");
         Console.WriteLine($"{colXs}");
-        
-        // Console.WriteLine("rowYs");
-        // Console.WriteLine($"{rowYs}");
+        Console.WriteLine("rowYs");
+        Console.WriteLine($"{rowYs}");
+
 
 
         ValueTuple<int,int,int,int> deneme = new ValueTuple<int,int,int,int>(4,5,2,3); 
