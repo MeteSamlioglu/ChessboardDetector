@@ -82,7 +82,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,8,9,2,4);
+            var transformation_matrix = ComputeHomography(all_intersection_points,0,2,7,11);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -117,7 +117,6 @@ static class DetectChessBoard
     public static ValueTuple<ValueTuple<int, int, int,int>, NDArray,NDArray,NDArray,NDArray>QuantizePoints(NDArray warped_scaled_points, NDArray intersection_points)
     {
 
-        Console.WriteLine("Girdim");
         var mean_col_xs = warped_scaled_points[$"...", 0].mean(axis : 0);
         var mean_row_ys = warped_scaled_points[$"...", 1].mean(axis : 1);
 
@@ -139,9 +138,7 @@ static class DetectChessBoard
 
         var intersection_points_ = NumSharpMethods.SliceIntegerNDArray(intersection_points,row_indices, col_indices);
         
-        Console.WriteLine("intersection_points");
-        Console.WriteLine($"{intersection_points_}");
-        
+
         int xmin = col_xs_.min().astype(NPTypeCode.Int32).GetData<int>()[0];;
         int xmax = col_xs_.max().astype(NPTypeCode.Int32).GetData<int>()[0];
         int ymin = row_ys_.min().astype(NPTypeCode.Int32).GetData<int>()[0];
@@ -165,34 +162,42 @@ static class DetectChessBoard
         var colXs = NumSharpMethods.Slice1DBoolean(col_xs_,col_mask);
  
         var rowYs = NumSharpMethods.Slice1DBoolean(row_ys_,row_mask);
-        
-        Console.WriteLine("col_mask");
-        Console.WriteLine($"{col_mask}");
-        
-        Console.WriteLine("row_mask");
-        Console.WriteLine($"{row_mask}");
-        
-        Console.WriteLine("colXs");
-        Console.WriteLine($"{colXs}");
-        Console.WriteLine("rowYs");
-        Console.WriteLine($"{rowYs}");
+
         
         var intersection_points_mask = NumSharpMethods.SliceNDArray(intersection_points_,row_mask, col_mask, 1);
 
-        var meshgrid = NumSharpMethods.MeshGrid(colXs, rowYs, -1);
-        Console.WriteLine("Mesgrid");
-        Console.WriteLine($"{meshgrid}");
-        xmin = - xmin + CONFIGURATION.BORDER_REFINEMENT.NUM_SURROUNDING_SQUARES_IN_WARPED_IMG;
-        ymin = - ymin + CONFIGURATION.BORDER_REFINEMENT.NUM_SURROUNDING_SQUARES_IN_WARPED_IMG;
-        var translation = np.array([xmin, ymin]);
+        var quantized_points = NumSharpMethods.MeshGrid(colXs, rowYs, -1);
+   
+        var xmin_ = - xmin + CONFIGURATION.BORDER_REFINEMENT.NUM_SURROUNDING_SQUARES_IN_WARPED_IMG;
+        var ymin_ = - ymin + CONFIGURATION.BORDER_REFINEMENT.NUM_SURROUNDING_SQUARES_IN_WARPED_IMG;
+        
+        var translation = np.array([xmin_, ymin_]);
         
         var scale = np.array(CONFIGURATION.BORDER_REFINEMENT.WARPED_SQUARE_SIZE);
-
-        ValueTuple<int,int,int,int> deneme = new ValueTuple<int,int,int,int>(4,5,2,3); 
         
+        NDArray scaled_quantized_points;
 
-        return new ValueTuple<ValueTuple<int,int,int,int>,NDArray, NDArray,NDArray,NDArray>
-        (deneme,intersection_points,intersection_points,intersection_points, intersection_points);
+        if ((quantized_points.size == 0) || (translation.size == 0))
+            scaled_quantized_points = np.empty(new Shape(0, 1));
+        
+        else
+            scaled_quantized_points = (quantized_points + translation) * scale;
+        
+        var Min = np.array(xmin, ymin) + translation;
+        var Max = np.array(xmax, ymax) + translation;
+        
+        xmin = Min[0];
+        ymin = Min[1];
+        xmax = Max[0];
+        ymax = Max[1];
+
+        
+        var warped_img_size = (np.array(xmax, ymax) + CONFIGURATION.BORDER_REFINEMENT.NUM_SURROUNDING_SQUARES_IN_WARPED_IMG) * scale;
+        
+        
+        ValueTuple<int,int,int,int> CornerLimits = new ValueTuple<int,int,int,int>(xmin,xmax,ymin,ymax); 
+        
+        return new ValueTuple<ValueTuple<int,int,int,int>,NDArray, NDArray,NDArray,NDArray>(CornerLimits,scale,scaled_quantized_points,intersection_points_mask, warped_img_size);
     }
     public static ValueTuple<NDArray,NDArray>FindBestScale(NDArray values)
     {
