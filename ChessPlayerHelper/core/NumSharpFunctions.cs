@@ -115,20 +115,31 @@ namespace core.OpenCvNumSharpConverter
             return SumResult;
         }
     
-        public static NDArray SliceNDArray(NDArray arr, NDArray rows_to_slice, NDArray cols_to_slice )
+        public static NDArray SliceNDArray(NDArray arr, NDArray rows_to_slice, NDArray cols_to_slice, int slicing_axis = 0)
         {
             
             List<int> rowIndices = new List<int>();
             List<int> columnIndices = new List<int>();
-            
-            for(int i = 0 ; i < rows_to_slice.shape[0]; i++)
-                if(rows_to_slice[i][0])
-                     rowIndices.Add(i);
-            
-            for(int i = 0 ; i < cols_to_slice.shape[0]; i++)
-                if(cols_to_slice[i][0])
-                    columnIndices.Add(i);
-            
+            if(slicing_axis == 0)
+            {   
+                for(int i = 0 ; i < rows_to_slice.shape[0]; i++)
+                    if(rows_to_slice[i][0])
+                        rowIndices.Add(i);
+                
+                for(int i = 0 ; i < cols_to_slice.shape[0]; i++)
+                    if(cols_to_slice[i][0])
+                        columnIndices.Add(i);
+            }
+            else 
+            {   
+                for(int i = 0 ; i < rows_to_slice.shape[0]; i++)
+                    if(rows_to_slice[i])
+                        rowIndices.Add(i);
+                
+                for(int i = 0 ; i < cols_to_slice.shape[0]; i++)
+                    if(cols_to_slice[i])
+                        columnIndices.Add(i);
+            }
             
             if(columnIndices.Count != 0 && rowIndices.Count != 0)
             {
@@ -317,5 +328,25 @@ namespace core.OpenCvNumSharpConverter
             }
             return arr;
         }
+
+        public static NDArray MeshGrid(NDArray arr1, NDArray arr2, int axis  = -1)
+        {
+            
+            NDArray resMesgrid = np.zeros((arr2.shape[0], arr1.shape[0], 2));
+            if(axis == -1)
+            {
+                resMesgrid = np.zeros((arr2.shape[0], arr1.shape[0], 2));
+                for(int i = 0 ; i < arr2.shape[0]; i++)
+                {
+                    for(int j = 0 ; j < arr1.shape[0]; j++)
+                    {
+                        resMesgrid[i][j][0] = arr1[j];
+                        resMesgrid[i][j][1] = arr2[i];
+                    }
+                }
+            }
+            return resMesgrid;
+        }
+    
     }
 }

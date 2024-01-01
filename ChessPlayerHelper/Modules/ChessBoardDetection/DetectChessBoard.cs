@@ -82,7 +82,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,4,5,3,7);
+            var transformation_matrix = ComputeHomography(all_intersection_points,8,9,2,4);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -139,8 +139,8 @@ static class DetectChessBoard
 
         var intersection_points_ = NumSharpMethods.SliceIntegerNDArray(intersection_points,row_indices, col_indices);
         
-        // Console.WriteLine("intersection_points");
-        // Console.WriteLine($"{intersection_points_}");
+        Console.WriteLine("intersection_points");
+        Console.WriteLine($"{intersection_points_}");
         
         int xmin = col_xs_.min().astype(NPTypeCode.Int32).GetData<int>()[0];;
         int xmax = col_xs_.max().astype(NPTypeCode.Int32).GetData<int>()[0];
@@ -176,8 +176,17 @@ static class DetectChessBoard
         Console.WriteLine($"{colXs}");
         Console.WriteLine("rowYs");
         Console.WriteLine($"{rowYs}");
+        
+        var intersection_points_mask = NumSharpMethods.SliceNDArray(intersection_points_,row_mask, col_mask, 1);
 
-
+        var meshgrid = NumSharpMethods.MeshGrid(colXs, rowYs, -1);
+        Console.WriteLine("Mesgrid");
+        Console.WriteLine($"{meshgrid}");
+        xmin = - xmin + CONFIGURATION.BORDER_REFINEMENT.NUM_SURROUNDING_SQUARES_IN_WARPED_IMG;
+        ymin = - ymin + CONFIGURATION.BORDER_REFINEMENT.NUM_SURROUNDING_SQUARES_IN_WARPED_IMG;
+        var translation = np.array([xmin, ymin]);
+        
+        var scale = np.array(CONFIGURATION.BORDER_REFINEMENT.WARPED_SQUARE_SIZE);
 
         ValueTuple<int,int,int,int> deneme = new ValueTuple<int,int,int,int>(4,5,2,3); 
         
