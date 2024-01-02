@@ -26,13 +26,13 @@ static class MatArrayConverter
         return transformation_matrix_;
     }
         
-        public static NDArray MatToNDArray(LineSegmentPolar[] Mat)
-        {
-            var linesArray = Mat
-            .Select(line => new float[] { line.Rho, line.Theta})
-            .ToArray();
-            return np.array(linesArray);
-        }
+    public static NDArray MatToNDArray(LineSegmentPolar[] Mat)
+    {
+        var linesArray = Mat
+        .Select(line => new float[] { line.Rho, line.Theta})
+        .ToArray();
+        return np.array(linesArray);
+    }
 
     
     public static Mat NDArrayToMat(NDArray ndArray)

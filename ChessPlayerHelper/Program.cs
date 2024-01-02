@@ -9,15 +9,16 @@ using Modules;
 using Accord.Math;
 using Accord.MachineLearning.Clustering;
 using Aglomera;
+using System.Threading.Tasks;
 
 class Program
 {
     static void Main()
     {
-        //Test.TestClustering();
-        //Hey.Test();
-        // Create a 1D array
-        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\board5.png");
+        // //Test.TestClustering();
+        // //Hey.Test();
+        // // Create a 1D array
+        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\myboard.jpg");
 
         Stopwatch stopwatch = new Stopwatch();
 
@@ -31,7 +32,7 @@ class Program
 
         TimeSpan elapsedTime = stopwatch.Elapsed;
         Console.WriteLine($"Time taken for resizing: {elapsedTime}");
-        // string ipAddress = "192.168.1.40";
+        // string ipAddress = "192.168.1.77";
         // int port = 8080;
 
         // // Create a VideoCapture object with the IP address and port
@@ -49,7 +50,8 @@ class Program
         // Cv2.ResizeWindow("Live Video", 1200, 900);
         // int frameWidth = 1200;
         // int frameHeight = 900;
-
+        // NDArray points = np.zeros((10,10));
+        // int flag = 0;
         // // Set the frame size properties
         // capture.Set(VideoCaptureProperties.FrameWidth, frameWidth);
         // capture.Set(VideoCaptureProperties.FrameHeight, frameHeight);
@@ -58,6 +60,8 @@ class Program
         // {
         //     // Read a frame from the video stream
         //     Mat frame = new Mat();
+            
+            
         //     capture.Read(frame);
         //     frame_count++;
         //     // Check if the frame is empty
@@ -66,13 +70,30 @@ class Program
         //         Console.WriteLine("Error reading frame from the video stream.");
         //         break;
         //     }
-        //     if(frame_count == 200)
+        //     if(frame_count == 100)
         //     {
-        //         var all_intersection_points =  DetectChessBoard.FindCorners(frame); 
+        //         //points =  DetectChessBoard.FindCorners(frame); 
+        //         Task.Run(() =>
+        //         {
+        //             points = DetectChessBoard.FindCorners(frame);
+        //         });
 
-
+                
+        //         flag = 1;
         //     }
-
+            
+        //     if(flag == 1)
+        //     {
+        //         var point1 = new OpenCvSharp.Point((double)points[0][0], (double)points[0][1]);
+        //         var point2 = new OpenCvSharp.Point((double)points[1][0], (double)points[1][1]);
+        //         var point3 = new OpenCvSharp.Point((double)points[2][0], (double)points[2][1]);
+        //         var point4 = new OpenCvSharp.Point((double)points[3][0], (double)points[3][1]);
+                
+        //         Cv2.Line(frame, point1, point2, Scalar.Green, 6);
+        //         Cv2.Line(frame, point2, point3, Scalar.Green, 6);
+        //         Cv2.Line(frame, point3, point4, Scalar.Green, 6);
+        //         Cv2.Line(frame, point4, point1, Scalar.Green, 6);
+        //     }
         //     // Display the frame in the "Live Video" window
         //     Cv2.ImShow("Live Video", frame);
 

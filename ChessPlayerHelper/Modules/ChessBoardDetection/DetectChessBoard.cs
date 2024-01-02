@@ -172,8 +172,8 @@ static class DetectChessBoard
 
         Cv2.WarpPerspective(img,warped, transformed_img, dims);
         
-        // Cv2.ImShow("Warped",warped);
-        // Cv2.WaitKey(0);
+        Cv2.ImShow("Warped",warped);
+        Cv2.WaitKey(0);
         
         var warpedNDArray = MatArrayConverter.MatToNDArray(warped);
 
@@ -209,19 +209,20 @@ static class DetectChessBoard
         
         var img_corners = WarpPoints_(inverse_matrix, corners);
         
-        img_corners = img_corners / 1;
+        img_corners = img_corners / img_scale;
         
-        Console.WriteLine($"{img_corners}");
+        // Console.WriteLine($"{img_corners}");
         
-        for(int i = 0 ; i < img_corners.shape[0]; i++)
-        {
-            // Use alias for OpenCvSharp.Point
-            Console.WriteLine("point {0} {1}",img_corners[i][0], img_corners[i][1]);
-            var center = new OpenCvSharp.Point((double)img_corners[i][0], (double)img_corners[i][1]);
-            Cv2.Circle(img, center, 5, Scalar.Red, -1);
-        }
-        Cv2.ImShow("Points", img);
-        Cv2.WaitKey(0);
+        // for(int i = 0 ; i < img_corners.shape[0]; i++)
+        // {
+        //     // Use alias for OpenCvSharp.Point
+        //     Console.WriteLine("point {0} {1}",img_corners[i][0], img_corners[i][1]);
+        //     var center = new OpenCvSharp.Point((double)img_corners[i][0], (double)img_corners[i][1]);
+        //     Cv2.Circle(img, center, 5, Scalar.Red, -1);
+        // }
+        Console.WriteLine("Size {0}",img.Size());
+        // Cv2.ImShow("Points", img);
+        // Cv2.WaitKey(0);
         
         return img_corners;
     }
