@@ -15,7 +15,7 @@ using Accord.Math;
 using Dbscan.RBush;
 using System.Xaml;
 using Microsoft.VisualBasic.Devices;
-using Google.Protobuf.WellKnownTypes;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace Modules
 {
@@ -70,10 +70,20 @@ static class DetectChessBoard
         var vertical_lines = EliminateSimilarLines(all_vertical_lines, all_horizontal_lines);
 
         var all_intersection_points = _get_intersection_points(horizontal_lines,vertical_lines);
+
+        //var best_configuration = (ValueTuple<ValueTuple<int, int, int, int>, NDArray, NDArray, NDArray, NDArray>?)null;
         
+        var best_configuration = (
+            (0, 0, 0, 0),    
+            default(NDArray),
+            default(NDArray), 
+            default(NDArray), 
+            default(NDArray)  
+        );        
+
         int best_num_inliers = 0;
         int iterations = 0;
-        while (iterations < 200 && best_num_inliers < 30)
+        while (iterations < 200 || best_num_inliers < 30)
         {   
             var rows = ChooseFromRange(horizontal_lines.shape[0]);
             var columns = ChooseFromRange(vertical_lines.shape[0]);
@@ -82,7 +92,7 @@ static class DetectChessBoard
             var col1 = columns[0];
             var col2 = columns[1];
             
-            var transformation_matrix = ComputeHomography(all_intersection_points,0,2,7,11);
+            var transformation_matrix = ComputeHomography(all_intersection_points,row1,row2,col1,col2);
             var warped_points = WarpPoints(transformation_matrix, all_intersection_points);
             var outliers = DiscardOutliers(warped_points,all_intersection_points);
             
@@ -101,15 +111,75 @@ static class DetectChessBoard
             if(num_inliers > best_num_inliers)
             {
              
-
                 var multArray = NumSharpMethods.MultNDArray(warped_points_, horizontal_scale, vertical_scale);
      
-                var configuration = QuantizePoints(warped_points_,intersection_points_);
+                var Configuration = QuantizePoints(warped_points_,intersection_points_);
+                int xmin = Configuration.Item1.Item1;
+                int xmax = Configuration.Item1.Item2;
+                int ymin = Configuration.Item1.Item3;
+                int ymax = Configuration.Item1.Item4;
+                var scale = Configuration.Item2;
+                var scaled_quantized_points = Configuration.Item3;
+                var IntersectionPoints = Configuration.Item4;
+                var warped_img_size = Configuration.Item5;
+                var reshapedQuantizedPoints = np.array(new int[] {scaled_quantized_points.shape[0],scaled_quantized_points.shape[1]});
+                num_inliers = np.prod(reshapedQuantizedPoints);
+                Console.WriteLine("num_inliers {0}",num_inliers);
+                if(num_inliers > best_num_inliers)
+                {
+                    best_num_inliers = num_inliers;
+                    best_configuration = Configuration;
+                }
             }
            
             iterations =  iterations + 1;
-
+            if(iterations > 10000)
+            {
+                Console.WriteLine("Chessboard not located Exception");
+            }
         }
+        var points = best_configuration.Item1;
+        int xmin_ = points.Item1;
+        int xmax_ = points.Item2;
+        int ymin_ = points.Item3;
+        int ymax_ = points.Item4;
+        var scale_ = best_configuration.Item2;
+        var quantized_points_ = best_configuration.Item3;
+        var intersection_points = best_configuration.Item4;
+        var warped_img_size_ = best_configuration.Item5;
+
+        // Console.WriteLine("xmin {0} xmax {1} ymin {2} ymax {3}",xmin_, xmax_, ymin_, ymax_);
+        // Console.WriteLine("scale");
+        // Console.WriteLine($"{scale_}");
+        // Console.WriteLine("quantized_points_");
+        // Console.WriteLine($"{quantized_points_}");
+        // Console.WriteLine("intersection_points");
+        // Console.WriteLine($"{intersection_points}");
+        // Console.WriteLine("warped_img_size_");
+        // Console.WriteLine($"{warped_img_size_}");
+        
+        var transformation_matrix_ = ComputeTransformationMatrix(intersection_points, quantized_points_);
+
+        var matrix_format = MatArrayConverter.NDArrayToMatrix(transformation_matrix_);
+  
+        // Calculate the inverse transformation matrix
+        var inverseTransformationMatrix = matrix_format.Inverse();
+ 
+        var inverse_matrix = MatArrayConverter.MatrixToNDArray(inverseTransformationMatrix);
+
+        var width = warped_img_size_[0].astype(np.int32);
+        
+        var height = warped_img_size_[1].astype(np.int32);        
+        
+        var dims = new Size(width, height);
+        
+        var transformed_img = MatArrayConverter.NDArrayToMat(transformation_matrix_);
+        
+        var warped = new Mat(dims, img.Type());
+
+        Cv2.WarpPerspective(img,warped, transformed_img, dims);
+
+        
         return all_intersection_points;
     }
     
@@ -130,7 +200,7 @@ static class DetectChessBoard
         
         // Console.WriteLine($"{row_ys}");  
 
-       var UniqueRes = NumSharpMethods.Unique(col_xs, row_ys);
+        var UniqueRes = NumSharpMethods.Unique(col_xs, row_ys);
         var col_xs_ = UniqueRes.Item1;
         var col_indices = UniqueRes.Item2;
         var row_ys_ =  UniqueRes.Item3;

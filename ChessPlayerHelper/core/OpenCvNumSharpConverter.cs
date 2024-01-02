@@ -3,6 +3,9 @@ using OpenCvSharp;
 using System.Runtime.InteropServices;
 using System;
 using System.Linq;
+using System.Drawing.Drawing2D;
+using MathNet.Numerics.LinearAlgebra;
+
 namespace core.OpenCvNumSharpConverter
 {
 
@@ -56,10 +59,37 @@ static class MatArrayConverter
         // Helper method to check if NDArray has numeric data
 
 
+    public static Matrix<double> NDArrayToMatrix(NDArray src)
+    {
+        var row_count = src.shape[0];
+        var col_count = src.shape[1];
+        var matrix = Matrix<double>.Build.Dense(row_count, col_count);
 
+        for (int i = 0; i < row_count; i++)
+        {
+            for (int j = 0; j < col_count; j++)
+            {
+                matrix[i, j] = src[i, j];
+            }
+        }   
 
+        return matrix;
+    }
+    public static NDArray MatrixToNDArray(Matrix<double> src)
+    {
+        var rows_ = src.RowCount;
+        var cols_ = src.ColumnCount;
+        var inverse_matrix = np.zeros(new Shape(rows_, cols_));
 
-
+        for (int i = 0; i < rows_; i++)
+        {
+            for (int j = 0; j < cols_; j++)
+            {
+                inverse_matrix[i, j] = src[i, j];
+            }
+        }
+        return inverse_matrix;
+    }
 }
 
 
