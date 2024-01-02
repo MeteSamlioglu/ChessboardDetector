@@ -17,7 +17,7 @@ class Program
         //Test.TestClustering();
         //Hey.Test();
         // Create a 1D array
-        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\myboard.jpg");
+        Mat myImage = Cv2.ImRead("D:\\chesscog\\example\\board5.png");
 
         Stopwatch stopwatch = new Stopwatch();
 

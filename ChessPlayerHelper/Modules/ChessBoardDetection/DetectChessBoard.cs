@@ -42,7 +42,7 @@ static class DetectChessBoard
         Cv2.CvtColor(img_, img, ColorConversionCodes.BGR2RGB);
      
         ValueTuple<float, Mat> resizedData = ResizeImage(img);
-
+        var img_scale = resizedData.Item1;
         var resizedImg = resizedData.Item2;
     
         // Convert from BGR to Grayscale
@@ -50,9 +50,10 @@ static class DetectChessBoard
         
         Cv2.CvtColor(img, gray, ColorConversionCodes.BGR2GRAY);
     
-        var edges_detected = DetectEdges(gray);        
-    
-
+        var edges_detected = DetectEdges(gray,CONFIGURATION.EDGE_DETECTION.LOW_THRESHOLD,
+                                              CONFIGURATION.EDGE_DETECTION.HIGH_THRESHOLD,
+                                              CONFIGURATION.EDGE_DETECTION.APERTURE);        
+        
         var detected_lines = DetectLines(edges_detected);
         
 
@@ -124,7 +125,7 @@ static class DetectChessBoard
                 var warped_img_size = Configuration.Item5;
                 var reshapedQuantizedPoints = np.array(new int[] {scaled_quantized_points.shape[0],scaled_quantized_points.shape[1]});
                 num_inliers = np.prod(reshapedQuantizedPoints);
-                Console.WriteLine("num_inliers {0}",num_inliers);
+                //Console.WriteLine("num_inliers {0}",num_inliers);
                 if(num_inliers > best_num_inliers)
                 {
                     best_num_inliers = num_inliers;
@@ -148,15 +149,7 @@ static class DetectChessBoard
         var intersection_points = best_configuration.Item4;
         var warped_img_size_ = best_configuration.Item5;
 
-        // Console.WriteLine("xmin {0} xmax {1} ymin {2} ymax {3}",xmin_, xmax_, ymin_, ymax_);
-        // Console.WriteLine("scale");
-        // Console.WriteLine($"{scale_}");
-        // Console.WriteLine("quantized_points_");
-        // Console.WriteLine($"{quantized_points_}");
-        // Console.WriteLine("intersection_points");
-        // Console.WriteLine($"{intersection_points}");
-        // Console.WriteLine("warped_img_size_");
-        // Console.WriteLine($"{warped_img_size_}");
+    
         
         var transformation_matrix_ = ComputeTransformationMatrix(intersection_points, quantized_points_);
 
@@ -178,12 +171,113 @@ static class DetectChessBoard
         var warped = new Mat(dims, img.Type());
 
         Cv2.WarpPerspective(img,warped, transformed_img, dims);
+        
+        // Cv2.ImShow("Warped",warped);
+        // Cv2.WaitKey(0);
+        
+        var warpedNDArray = MatArrayConverter.MatToNDArray(warped);
+
+        var gray_ = MatArrayConverter.MatToNDArray(gray);
+        
+        var borders = np.zeros_like(gray_);
+        
+        borders[$"3:-3",$"3:-3"] = 1;
+        var borders_ = MatArrayConverter.NDArrayToMat(borders);
+        var warped_borders = new Mat();
+        
+        Cv2.WarpPerspective(borders_,warped_borders,transformed_img,dims);
+        // Cv2.ImShow("Warped2",warped_borders);
+        // Cv2.WaitKey(0);
+        
+        var warped_borders_ = MatArrayConverter.MatToNDArray(warped_borders); 
+        
+        var warped_mask = warped_borders_ == 1;
+
+        // var VerticalBorders = ComputeVerticalBorders(warped, warped_mask,scale_, xmin_, xmax_); 
+        // var Xmin = VerticalBorders.Item1;
+        // var Xmax = VerticalBorders.Item2;
+        
+        // var scaled_xmin = Xmin * (int)scale_[0];
+        // var scaled_xmax = Xmax * (int)scale_[0];
+        
+        // Console.WriteLine("scaled_xmin {0} scaled_xmax {1}",scaled_xmin, scaled_xmax);
+        var corners = np.array([[xmin_, ymin_],
+                                [xmax_, ymin_],
+                                [xmax_, ymax_],
+                                [xmin_, ymax_]]).astype(np.float32);
+        corners = corners * scale_;
+        
+        var img_corners = WarpPoints_(inverse_matrix, corners);
+        
+        img_corners = img_corners / 1;
+        
+        Console.WriteLine($"{img_corners}");
+        
+        for(int i = 0 ; i < img_corners.shape[0]; i++)
+        {
+            // Use alias for OpenCvSharp.Point
+            Console.WriteLine("point {0} {1}",img_corners[i][0], img_corners[i][1]);
+            var center = new OpenCvSharp.Point((double)img_corners[i][0], (double)img_corners[i][1]);
+            Cv2.Circle(img, center, 5, Scalar.Red, -1);
+        }
+        Cv2.ImShow("Points", img);
+        Cv2.WaitKey(0);
+        
+        return img_corners;
+    }
+    public static NDArray get_nonmax_supressed(NDArray G_x, int x, NDArray scale)
+    {
+        x = (x*scale[0]).astype(np.int32);
+        var thresh = CONFIGURATION.BORDER_REFINEMENT.LINE_WIDTH / 2;
+        var slicedArray = G_x[":", x - thresh, x + thresh + 1];
+
+        return slicedArray.max(axis : 1);
+    }
+    public static ValueTuple<int, int>ComputeVerticalBorders(Mat warped, NDArray warped_mask, NDArray scale, int xmin, int xmax)
+    {
+        Mat sobelImg = new Mat();
+
+        Cv2.Sobel(warped, sobelImg, MatType.CV_64F, 1, 0, CONFIGURATION.BORDER_REFINEMENT.SOBEL_KERNEL_SIZE);
+        // Cv2.ImShow("Sobel",sobelImg);
+        // Cv2.WaitKey(0);        
+        var sobelArray = MatArrayConverter.MatToNDArray(sobelImg);
+        
+        var G_x = np.abs(sobelArray);
+        
+        var newValues = G_x * warped_mask.astype(NPTypeCode.Int32);
 
         
-        return all_intersection_points;
-    }
-    
+        //G_x[~warped_mask] = 0;
+        
+        var G_x_ = MatArrayConverter.NDArrayToMat(newValues);
+        
+        var res = DetectEdges(G_x_, CONFIGURATION.BORDER_REFINEMENT.EDGE_DETECTION.VERTICAL.LOW_THRESHOLD,
+                                    CONFIGURATION.BORDER_REFINEMENT.EDGE_DETECTION.VERTICAL.HIGH_THRESHOLD,
+                                    CONFIGURATION.BORDER_REFINEMENT.EDGE_DETECTION.VERTICAL.APERTURE);
+        Cv2.ImShow("Res",res);
+        Cv2.WaitKey(0);
+        G_x = MatArrayConverter.MatToNDArray(G_x_);
+        G_x = G_x * warped_mask.astype(NPTypeCode.Int32);
 
+        // G_x[~warped_mask] = 0;
+
+        while(xmax - xmin < 8)
+        {
+            Console.WriteLine("Alo1");
+            var top = get_nonmax_supressed(G_x, xmax + 1, scale);
+            var bottom = get_nonmax_supressed(G_x, xmin - 1, scale);
+            if(top.sum() > bottom.sum())
+            {
+                xmax+=1;
+            }
+            else
+            {
+                xmin -= 1;
+            }
+        }
+
+        return new ValueTuple<int, int>(xmin,xmax);
+    }
     public static ValueTuple<ValueTuple<int, int, int,int>, NDArray,NDArray,NDArray,NDArray>QuantizePoints(NDArray warped_scaled_points, NDArray intersection_points)
     {
 
@@ -426,7 +520,6 @@ static class DetectChessBoard
         var points = CoordinatesConverter.ToHomogenousCoordinates(Points);
         var transposedMatrix = np.transpose(TransformationMatrix);
         
-
         int n = points.shape[0];
         int m = points.shape[1];
         int p = transposedMatrix.shape[1];
@@ -454,7 +547,28 @@ static class DetectChessBoard
    
         return HomogenousCoordinates;
     }
-    public static Mat DetectEdges(Mat grayImg)
+   
+    public static NDArray WarpPoints_(NDArray TransformationMatrix, NDArray Points)
+    {
+        var points = CoordinatesConverter.ToHomogenousCoordinates(Points);
+        var transposedMatrix = np.transpose(TransformationMatrix);
+
+        // Ensure the last dimension is 3
+        if (points.shape.Length < 2 || points.shape[points.shape.Length - 1] != 3)
+        {
+            throw new ArgumentException("Invalid shape for homogeneous coordinates");
+        }
+
+        NDArray warpedPoints = np.dot(points, transposedMatrix);
+        Console.WriteLine($"{warpedPoints}");
+        NDArray lastCoordinate = warpedPoints[":", "-1"];
+
+        NDArray result = warpedPoints[":", ":-1"] / np.expand_dims(lastCoordinate, axis: -1);
+        
+        return result;
+    }
+
+    public static Mat DetectEdges(Mat grayImg, int Lt, int Ht, int aperture)
     { 
         /**
         * Detect edges in a grayscale image using the Canny edge detection algorithm.
@@ -465,22 +579,28 @@ static class DetectChessBoard
         * Returns:
         *   Mat: The resulting edges after applying the Canny edge detection.
         */        
+        int LOW_THRESHOLD = Lt;
+        int HIGH_THRESHOLD = Ht;
+        int APERTURE = aperture;
+       
+         if (grayImg.Depth() != MatType.CV_8U)
+        {
+            grayImg.ConvertTo(grayImg, MatType.CV_8U);
+        }
         if (grayImg.Type().Channels != 1)
         {
             // Normalize and convert to UInt8
             Cv2.Normalize(grayImg, grayImg, 0, 255, NormTypes.MinMax, MatType.CV_8U);
         }
         
-        Mat Edges = new Mat();
+        Mat Edges = new Mat(grayImg.Size(), grayImg.Type());
         
-        Cv2.Canny(grayImg,  Edges, 
-                    CONFIGURATION.EDGE_DETECTION.LOW_THRESHOLD, 
-                    CONFIGURATION.EDGE_DETECTION.HIGH_THRESHOLD, 
-                    CONFIGURATION.EDGE_DETECTION.APERTURE);
+        Cv2.Canny(grayImg,  Edges, LOW_THRESHOLD, HIGH_THRESHOLD, APERTURE);
         
         
         return Edges;
     }
+
     static float DegreesToRadians(float degrees)
     {
     /**
