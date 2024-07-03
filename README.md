@@ -8,27 +8,18 @@ Simple and intuitive interface
 Getting Started
 Prerequisites
 .NET Framework
-OpenCV for .NET (Emgu CV or OpenCvSharp)
+OpenCV for .NET (included in the project)
 Installation
 Clone the repository:
 
 bash
 Copy code
-git clone https://github.com/yourusername/ChessboardDetector.git
+git clone https://github.com/MeteSamlioglu/ChessboardDetector.git
 cd ChessboardDetector
-Install the required NuGet packages:
+Open the solution file ChessboardDetector.sln in Visual Studio.
 
-bash
-Copy code
-dotnet add package Emgu.CV
-dotnet add package Emgu.CV.UI
-dotnet add package Emgu.CV.Bitmap
-Or, if you're using OpenCvSharp:
+Restore NuGet packages if necessary by right-clicking the solution and selecting "Restore NuGet Packages".
 
-bash
-Copy code
-dotnet add package OpenCvSharp4
-dotnet add package OpenCvSharp4.runtime.win
 Build the project:
 
 bash
