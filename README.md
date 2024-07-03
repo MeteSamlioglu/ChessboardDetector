@@ -6,7 +6,6 @@ ChessboardDetector is a .NET C# project that uses image processing techniques to
 
 - Detects chessboards in images
 - Identifies the four corner positions of detected chessboards
-- Simple and intuitive interface
 
 ## Getting Started
 
